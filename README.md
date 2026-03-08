@@ -1,24 +1,12 @@
 # Wallpaper Planner
 
-A browser-rendered productivity dashboard displayed as your macOS desktop wallpaper via [Plash](https://sindresorhus.com/plash).
+A productivity planner overlay for your macOS desktop wallpaper. It layers Gantt-style project timelines and a daily task list on top of your existing wallpaper, turning your desktop into an always-visible planning dashboard — powered by [Plash](https://sindresorhus.com/plash).
 
-```
-┌─────────────────────┬──────────────────────┬──────────────────────┐
-│   The Radar: 2 Wks  │   Today's Tasks      │  The Horizon: 1 Week │
-│                     │                      │                      │
-│  bar ████░░░░░░░░   │  TODAY: Sprint Name  │  bar ████░░░         │
-│  bar ░░░░██████░░   │  ✓ Task 1            │  bar ░░░████░        │
-│  bar ░░░░░░░░████   │  ✓ Task 2            │  bar ░░░░░████       │
-│                     │  ○ Task 3            │                      │
-│                     │                      │                      │
-│                     │  Must-Wins: 3–5      │                      │
-│                     │  [Shutdown Ritual]   │                      │
-└─────────────────────┴──────────────────────┴──────────────────────┘
-```
+![Planner with wallpaper](examples/planner+wallpaper.png)
 
-## Screenshot
+The planner panels are semi-transparent, so your wallpaper shows through:
 
-![Wallpaper Planner screenshot](examples/screenshot.png)
+![Planner only](examples/planner.png)
 
 ---
 
