@@ -1,0 +1,10 @@
+# Generated exports
+wallpaper-export.png
+
+# Background image — add your own (see README)
+wallpaper.jpg
+wallpaper.heic
+*.heic
+
+# macOS
+.DS_Store

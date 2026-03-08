@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Planning Dashboard</title>
+<!-- tasks.js is loaded dynamically (cache-busted) inside the script below -->
+<style>
+  :root {
+    /* background */
+    --scrim-opacity:      0.38;
+    /* panels */
+    --panel-opacity:      0.62;
+    --panel-blur:         22px;
+    --panel-radius:       14px;
+    --panel-gap:          14px;
+    --center-width:       280px;
+    --panel-bg:           rgba(10, 16, 36, var(--panel-opacity));
+    --border:             rgba(255, 255, 255, 0.12);
+    /* colors */
+    --text:               #f0f6ff;
+    --muted:              #94a3b8;
+    --today-line:         #ef4444;
+    --must-wins-bg:       #b91c1c;
+    --badge-bg:           rgba(255,255,255,0.09);
+    /* typography */
+    --base-font:          15px;
+    --gantt-label-color:  #dde6f5;
+    --gantt-label-size:   11.5px;
+    --gantt-day-color:    #94a3b8;
+    --gantt-day-size:     10px;
+    --gantt-bar-opacity:  0.92;
+    --gantt-max-row-h:    38;
+    --gantt-label-width:  118px;
+    /* column widths */
+    --col-left:           1fr;
+    --col-right:          1fr;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-image: url('wallpaper.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    font-size: var(--base-font);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, var(--scrim-opacity));
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .topbar, .dashboard { position: relative; z-index: 1; }
+
+  /* ── Top bar ──────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 28px;
+    background: rgba(8, 12, 28, 0.60);
+    backdrop-filter: blur(var(--panel-blur));
+    -webkit-backdrop-filter: blur(var(--panel-blur));
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    flex-shrink: 0;
+    font-size: .88em;
+    color: var(--muted);
+    letter-spacing: .03em;
+  }
+  .topbar strong { color: var(--text); }
+
+  /* ── Dashboard grid ───────────────────────────────── */
+  .dashboard {
+    display: grid;
+    grid-template-columns: var(--col-left) var(--center-width) var(--col-right);
+    gap: var(--panel-gap);
+    padding: var(--panel-gap);
+    flex: 1;
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(var(--panel-blur));
+    -webkit-backdrop-filter: blur(var(--panel-blur));
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.08);
+    border-radius: var(--panel-radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .panel-title {
+    font-size: 1.0em;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+  }
+
+  /* ── Command Center ───────────────────────────────── */
+  .sprint-row {
+    margin: 8px 0 12px;
+    font-size: .84em;
+    color: var(--muted);
+  }
+  .sprint-row span { color: #fff; font-weight: 700; }
+
+  .task-list { list-style: none; flex: 1; overflow: hidden; }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: .9em;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .task-item:last-child { border-bottom: none; }
+
+  .check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px; font-weight: 800;
+  }
+  .check.done    { background: #2563eb; color: #fff; box-shadow: 0 0 6px rgba(37,99,235,0.5); }
+  .check.pending { border: 2px solid rgba(255,255,255,0.25); }
+
+  .task-text      { color: #e8f0fe; }
+  .task-text.done { color: var(--muted); text-decoration: line-through; }
+
+  .divider { height: 1px; background: rgba(255,255,255,0.12); margin: 12px 0; }
+
+  .must-wins-label { font-size: .8em; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+
+  .must-wins-badge {
+    display: inline-block;
+    background: var(--must-wins-bg);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1em;
+    padding: 7px 20px;
+    border-radius: 7px;
+    letter-spacing: .06em;
+    border: 1px solid rgba(255,100,100,0.6);
+    box-shadow: 0 0 12px rgba(185,28,28,0.4);
+  }
+
+  .shutdown-note {
+    margin-top: 12px;
+    background: rgba(202,138,4,0.85);
+    color: #1a1000;
+    border-radius: 5px;
+    padding: 7px 10px;
+    font-size: .75em;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: .03em;
+    flex-shrink: 0;
+  }
+
+  /* ── Gantt panels ─────────────────────────────────── */
+  .gantt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+
+  .gantt-subtitle { font-size: .78em; color: var(--muted); margin-top: 3px; font-weight: 600; }
+
+  .days-left {
+    background: var(--badge-bg);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1em;
+    padding: 5px 14px;
+    border-radius: 7px;
+    white-space: nowrap;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .gantt-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+  }
+
+  .gantt-svg { width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div id="topDate">Loading…</div>
+  <div id="topTime"></div>
+</div>
+
+<div class="dashboard">
+
+  <!-- Left: 2-Week Radar -->
+  <div class="panel">
+    <div class="gantt-header">
+      <div>
+        <div class="panel-title" id="twoWeekTitle"></div>
+        <div class="gantt-subtitle" id="twoWeekSubtitle"></div>
+      </div>
+      <div class="days-left" id="twoWeekDaysLeft"></div>
+    </div>
+    <div class="gantt-wrap">
+      <svg class="gantt-svg" id="twoWeekGantt"></svg>
+    </div>
+  </div>
+
+  <!-- Middle: Command Center -->
+  <div class="panel">
+    <div class="panel-title" id="commandTitle"></div>
+    <div class="sprint-row"><span id="todayPrefix"></span>: <span id="sprintName"></span></div>
+    <ul class="task-list" id="taskList"></ul>
+    <div class="divider"></div>
+    <div class="must-wins-label" id="mustWinsLabel"></div>
+    <div class="must-wins-badge" id="mustWins"></div>
+    <div class="shutdown-note" id="shutdownNote"></div>
+  </div>
+
+  <!-- Right: 1-Week Horizon -->
+  <div class="panel">
+    <div class="gantt-header">
+      <div>
+        <div class="panel-title" id="weekTitle"></div>
+        <div class="gantt-subtitle" id="weekSubtitle"></div>
+      </div>
+      <div class="days-left" id="weekDaysLeft"></div>
+    </div>
+    <div class="gantt-wrap">
+      <svg class="gantt-svg" id="weekGantt"></svg>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── Load tasks.js with cache-busting so Plash reload picks up changes ── */
+function loadTasks() {
+  const s = document.createElement('script');
+  s.src = 'tasks.js?t=' + Date.now();
+  s.onload = initDashboard;
+  document.head.appendChild(s);
+}
+
+function initDashboard() {
+  const data = window.tasksData;
+  const NS   = 'http://www.w3.org/2000/svg';
+  const root = document.documentElement;
+
+  /* ── apply every appearance option from tasks.js ── */
+  const app = data.appearance || {};
+  function setVar(name, val) {
+    if (val != null) root.style.setProperty(name, val);
+  }
+  // background
+  if (app.wallpaper    != null)
+    document.body.style.backgroundImage = app.wallpaper ? `url('${app.wallpaper}')` : 'none';
+  setVar('--scrim-opacity',     app.scrimOpacity);
+  // panels
+  setVar('--panel-opacity',     app.panelOpacity);
+  setVar('--panel-blur',        app.panelBlur     != null ? app.panelBlur     + 'px'  : null);
+  setVar('--panel-radius',      app.panelRadius   != null ? app.panelRadius   + 'px'  : null);
+  setVar('--panel-gap',         app.panelGap      != null ? app.panelGap      + 'px'  : null);
+  setVar('--center-width',      app.centerWidth   != null ? app.centerWidth   + 'px'  : null);
+  // colors
+  setVar('--text',              app.textColor);
+  setVar('--muted',             app.mutedColor);
+  setVar('--today-line',        app.todayLineColor);
+  setVar('--must-wins-bg',      app.mustWinsColor);
+  // typography
+  setVar('--base-font',         app.baseFontSize  != null ? app.baseFontSize  + 'px'  : null);
+  setVar('--gantt-label-color', app.ganttLabelColor);
+  setVar('--gantt-label-size',  app.ganttLabelSize!= null ? app.ganttLabelSize+ 'px'  : null);
+  setVar('--gantt-day-color',   app.ganttDayColor);
+  setVar('--gantt-day-size',    app.ganttDaySize  != null ? app.ganttDaySize  + 'px'  : null);
+  setVar('--gantt-bar-opacity', app.ganttBarOpacity);
+  setVar('--gantt-max-row-h',     app.ganttMaxRowHeight);
+  setVar('--gantt-label-width',   app.ganttLabelWidth != null ? app.ganttLabelWidth + 'px' : null);
+  // columns
+  const cols = app.columns || {};
+  setVar('--col-left',    cols.left);
+  setVar('--col-right',   cols.right);
+  setVar('--center-width',
+    cols.center != null ? (typeof cols.center === 'number' ? cols.center + 'px' : cols.center)
+    : app.centerWidth != null ? app.centerWidth + 'px' : null);
+  // topbar
+  if (app.showTopbar === false)
+    document.querySelector('.topbar').style.display = 'none';
+
+  /* ── helpers ─────────────────────────────────────── */
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function textEl(content, attrs, parent) {
+    const e = el('text', attrs, parent);
+    e.textContent = content;
+    return e;
+  }
+
+  /* ── clock ───────────────────────────────────────── */
+  function tick() {
+    const now = new Date();
+    document.getElementById('topDate').innerHTML =
+      `<strong>${now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</strong>`;
+    document.getElementById('topTime').innerHTML =
+      `<strong>${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</strong>`;
+  }
+  tick();
+  setInterval(tick, 30000);
+
+  /* ── static content ──────────────────────────────── */
+  /* ── labels ──────────────────────────────────────── */
+  const L = data.labels || {};
+  function lbl(id, fallback) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = L[id] !== undefined ? L[id] : fallback;
+  }
+  lbl('commandTitle',    'Command Center');
+  lbl('todayPrefix',     'TODAY');
+  lbl('mustWinsLabel',   'Must-Wins:');
+  lbl('twoWeekTitle',    'The Radar: 2 Weeks');
+  lbl('twoWeekSubtitle', 'Timeline');
+  lbl('twoWeekDaysLeft', '14 Days Left');
+  lbl('weekTitle',       'The Horizon: 1 Week');
+  lbl('weekSubtitle',    'Timeline');
+  lbl('weekDaysLeft',    '7 Days Left');
+
+  document.getElementById('sprintName').textContent   = data.sprintName;
+  document.getElementById('mustWins').textContent     = data.mustWinsRange;
+  document.getElementById('shutdownNote').textContent = (L.shutdownPrefix || 'SHUTDOWN RITUAL') + ': ' + data.shutdownRitual;
+
+  const ul = document.getElementById('taskList');
+  data.dailyTasks.forEach(t => {
+    const li = document.createElement('li');
+    li.className = 'task-item';
+    li.innerHTML = `
+      <span class="check ${t.done ? 'done' : 'pending'}">${t.done ? '✓' : ''}</span>
+      <span class="task-text ${t.done ? 'done' : ''}">${t.text}</span>`;
+    ul.appendChild(li);
+  });
+
+  /* ── Gantt renderer ──────────────────────────────── */
+  function renderGantt(svgId, projects, totalDays) {
+    const svg  = document.getElementById(svgId);
+    const wrap = svg.parentElement;
+    svg.innerHTML = '';
+
+    const W = wrap.clientWidth  || 400;
+    const H = wrap.clientHeight || 200;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    const LP     = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-label-width')) || 118;
+    const RP     = 12;
+    const TOP    = 22;
+    const BOTTOM = 8;
+    const chartW = W - LP - RP;
+    const chartH = H - TOP - BOTTOM;
+
+    /* ── row height: capped by ganttMaxRowHeight ─────── */
+    const maxRowH  = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-max-row-h')) || 38;
+    const barOpac  = getComputedStyle(root).getPropertyValue('--gantt-bar-opacity').trim() || '0.92';
+    const lblColor = getComputedStyle(root).getPropertyValue('--gantt-label-color').trim() || '#dde6f5';
+    const lblSize  = getComputedStyle(root).getPropertyValue('--gantt-label-size').trim()  || '11.5px';
+    const dayColor = getComputedStyle(root).getPropertyValue('--gantt-day-color').trim()   || '#94a3b8';
+    const daySize  = getComputedStyle(root).getPropertyValue('--gantt-day-size').trim()    || '10px';
+    const todayClr = getComputedStyle(root).getPropertyValue('--today-line').trim()        || '#ef4444';
+
+    const rowH     = Math.min(maxRowH, Math.max(22, Math.floor(chartH / projects.length)));
+    const barH     = Math.round(rowH * 0.50);
+    const barR     = 3;
+
+    /* vertical grid + day labels */
+    for (let d = 0; d <= totalDays; d++) {
+      const x = LP + (d / totalDays) * chartW;
+      el('line', {
+        x1: x, y1: TOP - 2, x2: x, y2: H - BOTTOM,
+        stroke: (d === 0 || d === totalDays)
+          ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)',
+        'stroke-width': (d === 0 || d === totalDays) ? 1.5 : 1
+      }, svg);
+      textEl(String(d), {
+        x: x + 3, y: TOP - 5,
+        fill: dayColor, 'font-size': daySize, 'font-family': 'inherit', 'font-weight': '600'
+      }, svg);
+    }
+
+    /* today line */
+    el('line', {
+      x1: LP, y1: TOP - 2, x2: LP, y2: H - BOTTOM,
+      stroke: todayClr, 'stroke-width': 2, 'stroke-dasharray': '4,3'
+    }, svg);
+
+    /* row separators */
+    projects.forEach((_, i) => {
+      if (i === 0) return;
+      el('line', {
+        x1: 0, y1: TOP + i * rowH, x2: W, y2: TOP + i * rowH,
+        stroke: 'rgba(255,255,255,0.05)', 'stroke-width': 1
+      }, svg);
+    });
+
+    /* ── word-wrap helper ─────────────────────────────
+       Splits text into lines that fit within maxW, then
+       renders them as <tspan> rows centred on barCenterY. */
+    function drawLabel(text, barCenterY, maxW) {
+      const fs    = parseFloat(lblSize) || 11.5;
+      const lineH = fs * 1.28;
+      const words = text.split(' ');
+      const lines = [];
+
+      /* measure with a temporary off-screen probe */
+      const probe = el('text', {
+        'font-size': lblSize, 'font-family': 'inherit',
+        'font-weight': '600', opacity: '0', x: '-9999', y: '-9999'
+      }, svg);
+
+      let cur = '';
+      for (const word of words) {
+        const trial = cur ? cur + ' ' + word : word;
+        probe.textContent = trial;
+        if (probe.getComputedTextLength() <= maxW) {
+          cur = trial;              // word fits — keep accumulating
+        } else {
+          if (cur) lines.push(cur); // wrap: save current line
+          cur = word;               // start new line with this word
+        }
+      }
+      if (cur) lines.push(cur);
+      svg.removeChild(probe);
+
+      /* vertically centre the block on the bar */
+      const totalH = lines.length * lineH;
+      const startY = barCenterY - totalH / 2 + fs * 0.82;
+      const LX     = 4; // left-aligned: start 4px from left edge
+
+      const node = el('text', {
+        'text-anchor': 'start', fill: lblColor,
+        'font-size': lblSize, 'font-family': 'inherit', 'font-weight': '600'
+      }, svg);
+      lines.forEach((line, li) => {
+        const span = document.createElementNS(NS, 'tspan');
+        span.setAttribute('x', LX);
+        span.setAttribute('y', startY + li * lineH);
+        span.textContent = line;
+        node.appendChild(span);
+      });
+    }
+
+    /* bars */
+    projects.forEach((p, i) => {
+      const rowY      = TOP + i * rowH;
+      const barY      = rowY + Math.round((rowH - barH) / 2);
+      const barCenterY = barY + barH / 2;
+      const x1        = LP + (p.start / totalDays) * chartW;
+      const x2        = LP + (p.end   / totalDays) * chartW;
+      const bw        = Math.max(barR * 2, x2 - x1);
+
+      /* wrapped label */
+      drawLabel(p.name, barCenterY, LP - 8);
+
+      /* glow */
+      el('rect', { x: x1-1, y: barY+1, width: bw+2, height: barH,
+        rx: barR+1, fill: p.color, opacity: '0.20' }, svg);
+      /* bar */
+      el('rect', { x: x1, y: barY, width: bw, height: barH,
+        rx: barR, fill: p.color, opacity: barOpac }, svg);
+      /* shine */
+      el('rect', { x: x1+2, y: barY+2, width: Math.max(0, bw-4),
+        height: Math.floor(barH * 0.35), rx: 2, fill: '#fff', opacity: '0.14' }, svg);
+    });
+
+    /* "Today" label */
+    textEl('Today', {
+      x: LP + 4, y: TOP - 5,
+      fill: todayClr, 'font-size': daySize, 'font-weight': '700', 'font-family': 'inherit'
+    }, svg);
+  }
+
+  /* ── render + resize ─────────────────────────────── */
+  function renderAll() {
+    renderGantt('weekGantt',    data.weekProjects,    7);
+    renderGantt('twoWeekGantt', data.twoWeekProjects, 14);
+  }
+
+  requestAnimationFrame(() => setTimeout(renderAll, 80));
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 120);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadTasks);
+</script>
+</body>
+</html>
