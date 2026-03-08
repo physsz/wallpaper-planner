@@ -16,6 +16,10 @@ A browser-rendered productivity dashboard displayed as your macOS desktop wallpa
 └─────────────────────┴──────────────────────┴──────────────────────┘
 ```
 
+## Screenshot
+
+![Wallpaper Planner screenshot](examples/screenshot.png)
+
 ---
 
 ## Requirements
