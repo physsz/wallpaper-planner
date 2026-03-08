@@ -265,12 +265,12 @@ twoWeekProjects: [
     inset: 8pt,
     fill: (_, row) => if row == 0 { luma(240) } else { white },
     [*Hex*],        [*Swatch*], [*Suggested Use*],
-    [`#4a90d9`],    [#box(fill: rgb("#4a90d9"), width: 24pt, height: 10pt, radius: 2pt)], [Normal / in-progress],
-    [`#5ba85b`],    [#box(fill: rgb("#5ba85b"), width: 24pt, height: 10pt, radius: 2pt)], [On-track / near done],
-    [`#e8734a`],    [#box(fill: rgb("#e8734a"), width: 24pt, height: 10pt, radius: 2pt)], [At risk],
-    [`#e84a5f`],    [#box(fill: rgb("#e84a5f"), width: 24pt, height: 10pt, radius: 2pt)], [Critical deadline],
-    [`#9b6dff`],    [#box(fill: rgb("#9b6dff"), width: 24pt, height: 10pt, radius: 2pt)], [Blocked / waiting],
-    [`#f0c040`],    [#box(fill: rgb("#f0c040"), width: 24pt, height: 10pt, radius: 2pt)], [On hold],
+    [`#4a90d9`],    [#box(fill: rgb("#4a90d9"), width: 24pt, height: 10pt, radius: 2pt)], [Blue — normal / in-progress],
+    [`#5ba85b`],    [#box(fill: rgb("#5ba85b"), width: 24pt, height: 10pt, radius: 2pt)], [Green — on track / nearly done],
+    [`#e8734a`],    [#box(fill: rgb("#e8734a"), width: 24pt, height: 10pt, radius: 2pt)], [Orange — at risk],
+    [`#e84a5f`],    [#box(fill: rgb("#e84a5f"), width: 24pt, height: 10pt, radius: 2pt)], [Red — critical / overdue],
+    [`#9b6dff`],    [#box(fill: rgb("#9b6dff"), width: 24pt, height: 10pt, radius: 2pt)], [Purple — blocked / waiting],
+    [`#f0c040`],    [#box(fill: rgb("#f0c040"), width: 24pt, height: 10pt, radius: 2pt)], [Yellow — on hold],
   )
 ]
 
