@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task Editor</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(30, 41, 59, 0.7);
+      --text: #f8fafc;
+      --accent: #3b82f6;
+      --border: rgba(255,255,255,0.1);
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+    h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+    
+    .task-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
+    input[type="text"] { 
+      flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); 
+      color: white; padding: 8px 12px; border-radius: 6px;
+    }
+    button { 
+      background: var(--accent); color: white; border: none; padding: 8px 16px; 
+      border-radius: 6px; cursor: pointer; font-weight: 600;
+    }
+    button.secondary { background: rgba(255,255,255,0.1); }
+    button.danger { background: #ef4444; }
+    
+    .footer { position: sticky; bottom: 0; background: var(--bg); padding: 15px 0; display: flex; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="section">
+    <h2>Today's Tasks</h2>
+    <div id="taskList"></div>
+    <button class="secondary" onclick="addTask()">+ Add Task</button>
+  </div>
+
+  <div class="section">
+    <h2>1-Week Horizon (Projects)</h2>
+    <div id="weekProjects"></div>
+    <button class="secondary" onclick="addProject('week')">+ Add Project</button>
+  </div>
+
+  <div class="section">
+    <h2>2-Week Radar (Projects)</h2>
+    <div id="twoWeekProjects"></div>
+    <button class="secondary" onclick="addProject('twoWeek')">+ Add Project</button>
+  </div>
+
+  <div class="footer">
+    <button style="flex: 1" onclick="saveData()">Save Changes</button>
+    <button class="secondary" onclick="window.close()">Cancel</button>
+  </div>
+
+  <script src="tasks.js"></script>
+  <script type="module" src="editor.js"></script>
+</body>
+</html>

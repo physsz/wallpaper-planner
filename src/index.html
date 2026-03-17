@@ -262,16 +262,55 @@
 </div>
 
 <script>
-/* ── Load tasks.js with cache-busting so Plash reload picks up changes ── */
-function loadTasks() {
-  const s = document.createElement('script');
-  s.src = 'tasks.js?t=' + Date.now();
-  s.onload = initDashboard;
-  document.head.appendChild(s);
+/* ── Load data from Backend ── */
+async function loadDataFromStore() {
+  const invoke = window.__TAURI__.core.invoke;
+  const listen = window.__TAURI__.event.listen;
+  
+  try {
+    const saved = await invoke("get_tasks");
+    const template = JSON.parse(JSON.stringify(window.tasksData));
+    let data;
+
+    if (saved && saved !== null) {
+      // Merge: template provides the core structure/settings, saved provides the user tasks
+      data = {
+        ...template,
+        ...saved,
+        dailyTasks: saved.dailyTasks || [],
+        weekProjects: saved.weekProjects || [],
+        twoWeekProjects: saved.twoWeekProjects || []
+      };
+    } else {
+      data = template;
+    }
+    
+    initDashboard(data);
+
+    // Listen for changes from the editor
+    await listen('tasks-updated', (event) => {
+      if (event.payload) {
+         // Merge logic again for incoming updates
+         const updated = {
+           ...template,
+           ...event.payload,
+           dailyTasks: event.payload.dailyTasks || [],
+           weekProjects: event.payload.weekProjects || [],
+           twoWeekProjects: event.payload.twoWeekProjects || []
+         };
+         initDashboard(updated);
+      }
+    });
+  } catch (e) {
+    console.error("Failed to load store:", e);
+    initDashboard(window.tasksData);
+  }
 }
 
-function initDashboard() {
-  const data = window.tasksData;
+function initDashboard(data) {
+  // Clear existing content if any
+  const taskListEl = document.getElementById('taskList');
+  if (taskListEl) taskListEl.innerHTML = '';
   const NS   = 'http://www.w3.org/2000/svg';
   const root = document.documentElement;
   const privacy = data.privacy || {};
@@ -533,7 +572,8 @@ function initDashboard() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', loadTasks);
+document.addEventListener('DOMContentLoaded', loadDataFromStore);
 </script>
+<script src="tasks.js"></script>
 </body>
 </html>
