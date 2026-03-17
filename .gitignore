@@ -9,5 +9,8 @@ src-tauri/Cargo.lock
 # macOS
 .DS_Store
 
+# Local agent journal
+AGENT.md
+
 # Wallpaper
 src/wallpaper-export.png

@@ -150,6 +150,105 @@
   .task-text      { color: #e8f0fe; }
   .task-text.done { color: var(--muted); text-decoration: line-through; }
 
+  .task-edit-list {
+    list-style: none;
+    flex: 1;
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  .task-edit-row {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .task-edit-row:last-child {
+    border-bottom: none;
+  }
+
+  .task-toggle-button,
+  .task-order-button,
+  .task-remove-button,
+  .task-add-button {
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .task-toggle-button {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .task-toggle-button.is-done {
+    background: #2563eb;
+    border-color: rgba(96, 165, 250, 0.9);
+  }
+
+  .task-order-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .task-order-button {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    line-height: 1;
+    font-size: 14px;
+  }
+
+  .task-remove-button {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .task-edit-input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 10px 12px;
+    font: inherit;
+  }
+
+  .task-edit-input.is-done {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .task-add-button {
+    margin-top: 12px;
+    width: 100%;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 600;
+  }
+
+  .task-toggle-button:hover,
+  .task-order-button:hover,
+  .task-remove-button:hover,
+  .task-add-button:hover {
+    background: rgba(255,255,255,0.14);
+  }
+
   .divider { height: 1px; background: rgba(255,255,255,0.12); margin: 12px 0; }
 
   .must-wins-label { font-size: .8em; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
@@ -209,6 +308,185 @@
   }
 
   .gantt-svg { width: 100%; height: 100%; display: block; }
+
+  .panel-action-button {
+    margin-top: 12px;
+    width: 100%;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .panel-action-button:hover {
+    background: rgba(255,255,255,0.14);
+  }
+
+  .edit-mode-banner,
+  .project-inspector {
+    position: fixed;
+    z-index: 4;
+    background: rgba(10, 16, 36, 0.9);
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .edit-mode-banner {
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 999px;
+  }
+
+  body.dashboard-edit-mode .edit-mode-banner {
+    display: flex;
+  }
+
+  .edit-mode-status {
+    font-size: 0.78em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #bfdbfe;
+    font-weight: 700;
+  }
+
+  .edit-mode-note {
+    font-size: 0.82em;
+    color: var(--muted);
+  }
+
+  .inspector-button {
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .inspector-button:hover {
+    background: rgba(255,255,255,0.14);
+  }
+
+  .project-inspector {
+    right: 16px;
+    bottom: 16px;
+    width: min(340px, calc(100vw - 32px));
+    border-radius: 18px;
+    padding: 18px;
+    display: none;
+  }
+
+  .project-inspector.visible {
+    display: block;
+  }
+
+  .panel-edit-hint {
+    margin-top: 10px;
+    font-size: 0.78em;
+    color: var(--muted);
+    line-height: 1.4;
+    display: none;
+  }
+
+  body.dashboard-edit-mode .panel-edit-hint {
+    display: block;
+  }
+
+  .inspector-title {
+    font-size: 0.78em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .inspector-name {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+
+  .inspector-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .inspector-field label {
+    display: block;
+    font-size: 0.76em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .inspector-field input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 10px 12px;
+    font: inherit;
+  }
+
+  .inspector-help {
+    margin-top: 12px;
+    font-size: 0.8em;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .inspector-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .inspector-button.danger {
+    background: rgba(185, 28, 28, 0.86);
+    border-color: rgba(252, 165, 165, 0.28);
+  }
+
+  .inspector-button.danger:hover {
+    background: rgba(220, 38, 38, 0.92);
+  }
+
+  .gantt-project-hit {
+    cursor: pointer;
+  }
+
+  body.dashboard-edit-mode .gantt-project-hit:hover {
+    stroke: rgba(191, 219, 254, 0.95);
+    stroke-width: 2;
+  }
+
+  .gantt-selection-outline {
+    pointer-events: none;
+  }
+
+  .gantt-selection-badge {
+    pointer-events: none;
+  }
+
+  .gantt-row-control {
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -232,6 +510,8 @@
     <div class="gantt-wrap">
       <svg class="gantt-svg" id="twoWeekGantt"></svg>
     </div>
+    <div class="panel-edit-hint">Select a visible bar to rename it, move it up or down, and adjust dates.</div>
+    <button class="panel-action-button" id="addTwoWeekProjectButton" type="button" hidden>Add 2-Week Project</button>
   </div>
 
   <!-- Middle: Command Center -->
@@ -239,6 +519,7 @@
     <div class="panel-title" id="commandTitle"></div>
     <div class="sprint-row"><span id="todayPrefix"></span>: <span id="sprintName"></span></div>
     <ul class="task-list" id="taskList"></ul>
+    <button class="task-add-button" id="addTaskButton" type="button" hidden>Add Task</button>
     <div class="divider"></div>
     <div class="must-wins-label" id="mustWinsLabel"></div>
     <div class="must-wins-badge" id="mustWins"></div>
@@ -257,400 +538,1005 @@
     <div class="gantt-wrap">
       <svg class="gantt-svg" id="weekGantt"></svg>
     </div>
+    <div class="panel-edit-hint">Select a visible bar to rename it, move it up or down, and adjust dates.</div>
+    <button class="panel-action-button" id="addWeekProjectButton" type="button" hidden>Add 1-Week Project</button>
   </div>
 
 </div>
 
+<div class="edit-mode-banner" id="editModeBanner">
+  <div>
+    <div class="edit-mode-status">Dashboard Edit Mode</div>
+    <div class="edit-mode-note">Select a visible Gantt bar to change its beginning and ending dates. Use the tray toggle to exit.</div>
+  </div>
+</div>
+
+<div class="project-inspector" id="projectInspector">
+  <div class="inspector-title" id="inspectorScope">Project Editor</div>
+  <div class="inspector-name" id="inspectorName">Select a project</div>
+  <div class="inspector-grid">
+    <div class="inspector-field">
+      <label for="projectNameInput">Project Name</label>
+      <input id="projectNameInput" type="text">
+    </div>
+    <div class="inspector-field">
+      <label for="projectStartInput">Beginning Date</label>
+      <input id="projectStartInput" type="date">
+    </div>
+    <div class="inspector-field">
+      <label for="projectDeadlineInput">Ending Date</label>
+      <input id="projectDeadlineInput" type="date">
+    </div>
+  </div>
+  <div class="inspector-help" id="inspectorHelp">
+    Date edits are saved directly to the dashboard data and work in both rolling and fixed views.
+  </div>
+  <div class="inspector-actions">
+    <button class="inspector-button" id="clearProjectSelectionButton" type="button">Done</button>
+    <button class="inspector-button danger" id="removeProjectButton" type="button">Remove</button>
+  </div>
+</div>
+
 <script>
-/* ── Load data from Backend ── */
-async function loadDataFromStore() {
-  const invoke = window.__TAURI__.core.invoke;
-  const listen = window.__TAURI__.event.listen;
-  
-  try {
-    const saved = await invoke("get_tasks");
-    const template = JSON.parse(JSON.stringify(window.tasksData));
-    let data;
+const invoke = window.__TAURI__.core.invoke;
+const listen = window.__TAURI__.event.listen;
 
-    if (saved && saved !== null) {
-      // Merge: template provides the core structure/settings, saved provides the user tasks
-      data = {
-        ...template,
-        ...saved,
-        dailyTasks: saved.dailyTasks || [],
-        weekProjects: saved.weekProjects || [],
-        twoWeekProjects: saved.twoWeekProjects || []
-      };
-    } else {
-      data = template;
-    }
-    
-    initDashboard(data);
+const appState = {
+  template: null,
+  data: null,
+  isEditMode: false,
+  selectedProject: null,
+  clockTimer: null,
+  resizeTimer: null,
+  saveTimer: null,
+  listenersBound: false,
+};
 
-    // Listen for changes from the editor
-    await listen('tasks-updated', (event) => {
-      if (event.payload) {
-         // Merge logic again for incoming updates
-         const updated = {
-           ...template,
-           ...event.payload,
-           dailyTasks: event.payload.dailyTasks || [],
-           weekProjects: event.payload.weekProjects || [],
-           twoWeekProjects: event.payload.twoWeekProjects || []
-         };
-         initDashboard(updated);
-      }
-    });
-  } catch (e) {
-    console.error("Failed to load store:", e);
-    initDashboard(window.tasksData);
-  }
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
-function initDashboard(data) {
-  // Clear existing content if any
-  const taskListEl = document.getElementById('taskList');
-  if (taskListEl) taskListEl.innerHTML = '';
-  const NS   = 'http://www.w3.org/2000/svg';
+function mergeData(template, saved) {
+  if (!saved || saved === null) return clone(template);
+  return {
+    ...clone(template),
+    ...saved,
+    dailyTasks: saved.dailyTasks || [],
+    weekProjects: saved.weekProjects || [],
+    twoWeekProjects: saved.twoWeekProjects || []
+  };
+}
+
+function getProjectArray(projectRef) {
+  if (!projectRef || !appState.data) return null;
+  return appState.data[projectRef.group];
+}
+
+function getSelectedProject() {
+  const projects = getProjectArray(appState.selectedProject);
+  if (!projects) return null;
+  return projects[appState.selectedProject.index] || null;
+}
+
+function moveArrayItem(items, fromIndex, toIndex) {
+  if (!items || fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= items.length || toIndex >= items.length) {
+    return false;
+  }
+  const [item] = items.splice(fromIndex, 1);
+  items.splice(toIndex, 0, item);
+  return true;
+}
+
+function shiftIsoDate(dateStr, days) {
+  const date = new Date(`${dateStr}T00:00:00`);
+  date.setDate(date.getDate() + days);
+  return toIsoDate(date);
+}
+
+function toIsoDate(date) {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+}
+
+function getCurrentHorizonRanges() {
+  const appearance = appState.data?.appearance || {};
+  const viewMode = appearance.viewMode || 'rolling';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let weekStart;
+  let weekDays;
+  let twoWeekStart;
+  let twoWeekDays;
+
+  if (viewMode === 'fixed') {
+    const mondayAnchor = new Date(today);
+    const day = mondayAnchor.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    mondayAnchor.setDate(mondayAnchor.getDate() + mondayOffset);
+
+    weekStart = mondayAnchor;
+    weekDays = 7;
+    twoWeekStart = new Date(weekStart);
+    twoWeekDays = 14;
+  } else {
+    weekStart = new Date(today);
+    weekDays = 7;
+    twoWeekStart = new Date(today);
+    twoWeekDays = 14;
+  }
+
+  const weekMax = new Date(weekStart);
+  weekMax.setDate(weekMax.getDate() + weekDays);
+
+  const twoWeekMax = new Date(twoWeekStart);
+  twoWeekMax.setDate(twoWeekMax.getDate() + twoWeekDays);
+
+  const twoWeekDay8 = new Date(today);
+  twoWeekDay8.setDate(twoWeekDay8.getDate() + 8);
+
+  return {
+    today,
+    weekMax,
+    twoWeekMax,
+    twoWeekDay8
+  };
+}
+
+function getProjectBounds(projectRef, project) {
+  if (!projectRef) return null;
+
+  const ranges = getCurrentHorizonRanges();
+
+  if (projectRef.group === 'weekProjects') {
+    const startMin = toIsoDate(ranges.today);
+    const startMax = toIsoDate(ranges.weekMax);
+    const deadlineMin = project.start && project.start > startMin ? project.start : startMin;
+    return {
+      startMin,
+      startMax,
+      deadlineMin,
+      deadlineMax: startMax,
+      help: '1-week projects can begin between today and day 7. Their ending date must be between the beginning date and day 7.'
+    };
+  }
+
+  const startMin = toIsoDate(ranges.today);
+  const startMax = toIsoDate(ranges.twoWeekMax);
+  const day8 = toIsoDate(ranges.twoWeekDay8);
+  const deadlineMin = project.start && project.start > day8 ? project.start : day8;
+
+  return {
+    startMin,
+    startMax,
+    deadlineMin,
+    deadlineMax: startMax,
+    help: '2-week projects can begin between today and day 14. Their ending date must be at least day 8 from today, or the beginning date if that is later.'
+  };
+}
+
+function clampProjectToBounds(projectRef, project) {
+  const bounds = getProjectBounds(projectRef, project);
+  if (!bounds) return;
+  if (project.start < bounds.startMin) project.start = bounds.startMin;
+  if (project.start > bounds.startMax) project.start = bounds.startMax;
+
+  const refreshedBounds = getProjectBounds(projectRef, project);
+  if (project.deadline < refreshedBounds.deadlineMin) project.deadline = refreshedBounds.deadlineMin;
+  if (project.deadline > refreshedBounds.deadlineMax) project.deadline = refreshedBounds.deadlineMax;
+}
+
+function nudgeSelectedProject(mode, delta) {
+  const project = getSelectedProject();
+  if (!project || !appState.selectedProject) return false;
+
+  if (mode === 'shift') {
+    project.start = shiftIsoDate(project.start, delta);
+    project.deadline = shiftIsoDate(project.deadline, delta);
+  } else if (mode === 'start') {
+    project.start = shiftIsoDate(project.start, delta);
+  } else if (mode === 'deadline') {
+    project.deadline = shiftIsoDate(project.deadline, delta);
+  } else {
+    return false;
+  }
+
+  clampProjectToBounds(appState.selectedProject, project);
+  return true;
+}
+
+async function persistDashboardData() {
+  await invoke("save_tasks", { data: appState.data });
+  await window.__TAURI__.event.emit('tasks-updated', appState.data);
+}
+
+function scheduleDashboardSave() {
+  clearTimeout(appState.saveTimer);
+  appState.saveTimer = window.setTimeout(() => {
+    persistDashboardData().catch((error) => console.error('Failed to save dashboard data:', error));
+  }, 180);
+}
+
+async function setDashboardEditMode(enabled) {
+  appState.isEditMode = await invoke("set_dashboard_edit_mode", { enabled });
+  if (!appState.isEditMode) {
+    appState.selectedProject = null;
+  }
+  renderDashboard();
+}
+
+function bindUI() {
+  if (appState.listenersBound) return;
+  appState.listenersBound = true;
+
+  document.getElementById('clearProjectSelectionButton').addEventListener('click', () => {
+    appState.selectedProject = null;
+    renderDashboard();
+  });
+
+  document.getElementById('addTaskButton').addEventListener('click', () => {
+    if (!appState.data) return;
+    appState.data.dailyTasks.push({ text: '', done: false });
+    renderDashboard();
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('addWeekProjectButton').addEventListener('click', () => {
+    addProject('weekProjects');
+  });
+
+  document.getElementById('addTwoWeekProjectButton').addEventListener('click', () => {
+    addProject('twoWeekProjects');
+  });
+
+  document.getElementById('projectStartInput').addEventListener('change', async (event) => {
+    const project = getSelectedProject();
+    if (!project) return;
+    const bounds = getProjectBounds(appState.selectedProject, project);
+    const value = event.target.value;
+    if (!value) return;
+    project.start = value < bounds.startMin ? bounds.startMin : value > bounds.startMax ? bounds.startMax : value;
+    const updatedBounds = getProjectBounds(appState.selectedProject, project);
+    if (project.deadline && project.deadline < updatedBounds.deadlineMin) {
+      project.deadline = updatedBounds.deadlineMin;
+    }
+    if (project.deadline && project.deadline > updatedBounds.deadlineMax) {
+      project.deadline = updatedBounds.deadlineMax;
+    }
+    await persistDashboardData();
+    renderDashboard();
+  });
+
+  document.getElementById('projectNameInput').addEventListener('input', (event) => {
+    const project = getSelectedProject();
+    if (!project) return;
+    project.name = event.target.value;
+    document.getElementById('inspectorName').textContent = project.name || 'Untitled Project';
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('projectDeadlineInput').addEventListener('change', async (event) => {
+    const project = getSelectedProject();
+    if (!project) return;
+    const bounds = getProjectBounds(appState.selectedProject, project);
+    const value = event.target.value;
+    if (!value) return;
+    project.deadline = value < bounds.deadlineMin ? bounds.deadlineMin : value > bounds.deadlineMax ? bounds.deadlineMax : value;
+    await persistDashboardData();
+    renderDashboard();
+  });
+
+  document.getElementById('removeProjectButton').addEventListener('click', () => {
+    const projectRef = appState.selectedProject;
+    const projects = getProjectArray(projectRef);
+    if (!projects) return;
+    projects.splice(projectRef.index, 1);
+    appState.selectedProject = null;
+    renderDashboard();
+    scheduleDashboardSave();
+  });
+
+  window.addEventListener('resize', () => {
+    clearTimeout(appState.resizeTimer);
+    appState.resizeTimer = setTimeout(renderDashboard, 120);
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (!appState.isEditMode || !appState.selectedProject) return;
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+
+    let handled = false;
+    if (event.key === 'ArrowLeft') {
+      if (event.shiftKey) {
+        handled = nudgeSelectedProject('deadline', -1);
+      } else if (event.altKey) {
+        handled = nudgeSelectedProject('start', -1);
+      } else {
+        handled = nudgeSelectedProject('shift', -1);
+      }
+    } else if (event.key === 'ArrowRight') {
+      if (event.shiftKey) {
+        handled = nudgeSelectedProject('deadline', 1);
+      } else if (event.altKey) {
+        handled = nudgeSelectedProject('start', 1);
+      } else {
+        handled = nudgeSelectedProject('shift', 1);
+      }
+    }
+
+    if (handled) {
+      event.preventDefault();
+      renderDashboard();
+      scheduleDashboardSave();
+    }
+  });
+}
+
+async function loadDataFromStore() {
+  bindUI();
+
+  try {
+    appState.template = clone(window.tasksData);
+    const saved = await invoke("get_tasks");
+    appState.data = mergeData(appState.template, saved);
+    appState.isEditMode = await invoke("get_dashboard_edit_mode");
+
+    await listen('tasks-updated', (event) => {
+      if (!event.payload) return;
+      appState.data = mergeData(appState.template, event.payload);
+      if (!getSelectedProject()) {
+        appState.selectedProject = null;
+      }
+      renderDashboard();
+    });
+
+    await listen('dashboard-edit-mode-changed', (event) => {
+      appState.isEditMode = !!event.payload;
+      if (!appState.isEditMode) {
+        appState.selectedProject = null;
+      }
+      renderDashboard();
+    });
+  } catch (error) {
+    console.error("Failed to load dashboard state:", error);
+    appState.template = clone(window.tasksData);
+    appState.data = clone(window.tasksData);
+  }
+
+  renderDashboard();
+}
+
+function renderDashboard() {
+  if (!appState.data) return;
+
+  const NS = 'http://www.w3.org/2000/svg';
   const root = document.documentElement;
+  const body = document.body;
+  const data = appState.data;
   const privacy = data.privacy || {};
   const app = data.appearance || {};
-
-  /* ── Time Calculations ── */
   const now = new Date();
   const todayMidnight = new Date();
-  todayMidnight.setHours(0,0,0,0);
-
+  todayMidnight.setHours(0, 0, 0, 0);
   const viewMode = app.viewMode || "rolling";
 
-  // Calculate offsets for Gantt rendering
-  let weekStart, weekDays, twoWeekStart, twoWeekDays;
-  let weekSubtitle, twoWeekSubtitle;
+  let weekStart;
+  let weekDays;
+  let twoWeekStart;
+  let twoWeekDays;
+  let weekSubtitle;
+  let twoWeekSubtitle;
 
   if (viewMode === "fixed") {
-    // Current Week (Mon-Sun)
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    weekStart = new Date(now.setDate(diff));
-    weekStart.setHours(0,0,0,0);
-    
+    const mondayAnchor = new Date(todayMidnight);
+    const day = mondayAnchor.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    mondayAnchor.setDate(mondayAnchor.getDate() + mondayOffset);
+
+    weekStart = mondayAnchor;
     weekDays = 7;
-    weekSubtitle = `Week of ${weekStart.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
+    weekSubtitle = `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 
     twoWeekStart = new Date(weekStart);
     twoWeekDays = 14;
-    twoWeekSubtitle = `Current & Next Week`;
+    twoWeekSubtitle = 'Current & Next Week';
   } else {
-    // Rolling (Default)
     weekStart = new Date(todayMidnight);
     weekDays = 7;
-    weekSubtitle = "7-Day Horizon";
+    weekSubtitle = '7-Day Horizon';
 
     twoWeekStart = new Date(todayMidnight);
     twoWeekDays = 14;
-    twoWeekSubtitle = "14-Day Radar";
+    twoWeekSubtitle = '14-Day Radar';
   }
 
   document.getElementById('weekSubtitle').textContent = weekSubtitle;
   document.getElementById('twoWeekSubtitle').textContent = twoWeekSubtitle;
   document.getElementById('weekDaysLeft').textContent = `${weekDays} Days`;
   document.getElementById('twoWeekDaysLeft').textContent = `${twoWeekDays} Days`;
-  
-  function setVar(name, val) {
-    if (val != null) root.style.setProperty(name, val);
+  body.classList.toggle('dashboard-edit-mode', appState.isEditMode);
+
+  function setVar(name, value) {
+    if (value != null) root.style.setProperty(name, value);
   }
-  // background
-  if (app.wallpaper    != null)
+
+  if (app.wallpaper != null) {
     document.body.style.backgroundImage = app.wallpaper ? `url('${app.wallpaper}')` : 'none';
-  setVar('--scrim-opacity',     app.scrimOpacity);
-  // panels
-  setVar('--panel-opacity',     app.panelOpacity);
-  setVar('--panel-blur',        app.panelBlur     != null ? app.panelBlur     + 'px'  : null);
-  setVar('--panel-radius',      app.panelRadius   != null ? app.panelRadius   + 'px'  : null);
-  setVar('--panel-gap',         app.panelGap      != null ? app.panelGap      + 'px'  : null);
-  setVar('--center-width',      app.centerWidth   != null ? app.centerWidth   + 'px'  : null);
-  // colors
-  setVar('--text',              app.textColor);
-  setVar('--muted',             app.mutedColor);
-  setVar('--today-line',        app.todayLineColor);
-  setVar('--must-wins-bg',      app.mustWinsColor);
-  // typography
-  setVar('--base-font',         app.baseFontSize  != null ? app.baseFontSize  + 'px'  : null);
+  }
+  setVar('--scrim-opacity', app.scrimOpacity);
+  setVar('--panel-opacity', app.panelOpacity);
+  setVar('--panel-blur', app.panelBlur != null ? `${app.panelBlur}px` : null);
+  setVar('--panel-radius', app.panelRadius != null ? `${app.panelRadius}px` : null);
+  setVar('--panel-gap', app.panelGap != null ? `${app.panelGap}px` : null);
+  setVar('--center-width', app.centerWidth != null ? `${app.centerWidth}px` : null);
+  setVar('--text', app.textColor);
+  setVar('--muted', app.mutedColor);
+  setVar('--today-line', app.todayLineColor);
+  setVar('--must-wins-bg', app.mustWinsColor);
+  setVar('--base-font', app.baseFontSize != null ? `${app.baseFontSize}px` : null);
   setVar('--gantt-label-color', app.ganttLabelColor);
-  setVar('--gantt-label-size',  app.ganttLabelSize!= null ? app.ganttLabelSize+ 'px'  : null);
-  setVar('--gantt-day-color',   app.ganttDayColor);
-  setVar('--gantt-day-size',    app.ganttDaySize  != null ? app.ganttDaySize  + 'px'  : null);
+  setVar('--gantt-label-size', app.ganttLabelSize != null ? `${app.ganttLabelSize}px` : null);
+  setVar('--gantt-day-color', app.ganttDayColor);
+  setVar('--gantt-day-size', app.ganttDaySize != null ? `${app.ganttDaySize}px` : null);
   setVar('--gantt-bar-opacity', app.ganttBarOpacity);
-  setVar('--gantt-max-row-h',     app.ganttMaxRowHeight);
-  setVar('--gantt-label-width',   app.ganttLabelWidth != null ? app.ganttLabelWidth + 'px' : null);
-  // columns
+  setVar('--gantt-max-row-h', app.ganttMaxRowHeight);
+  setVar('--gantt-label-width', app.ganttLabelWidth != null ? `${app.ganttLabelWidth}px` : null);
+
   const cols = app.columns || {};
-  setVar('--col-left',    cols.left);
-  setVar('--col-right',   cols.right);
+  setVar('--col-left', cols.left);
+  setVar('--col-right', cols.right);
   setVar('--center-width',
-    cols.center != null ? (typeof cols.center === 'number' ? cols.center + 'px' : cols.center)
-    : app.centerWidth != null ? app.centerWidth + 'px' : null);
-  // topbar
-  if (app.showTopbar === false)
-    document.querySelector('.topbar').style.display = 'none';
+    cols.center != null ? (typeof cols.center === 'number' ? `${cols.center}px` : cols.center)
+    : app.centerWidth != null ? `${app.centerWidth}px` : null
+  );
 
-  /* ── helpers ─────────────────────────────────────── */
+  document.querySelector('.topbar').style.display = app.showTopbar === false ? 'none' : 'flex';
+
   function el(tag, attrs, parent) {
-    const e = document.createElementNS(NS, tag);
-    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
-    if (parent) parent.appendChild(e);
-    return e;
+    const node = document.createElementNS(NS, tag);
+    for (const [key, value] of Object.entries(attrs)) {
+      node.setAttribute(key, value);
+    }
+    if (parent) parent.appendChild(node);
+    return node;
   }
+
   function textEl(content, attrs, parent) {
-    const e = el('text', attrs, parent);
-    e.textContent = content;
-    return e;
+    const node = el('text', attrs, parent);
+    node.textContent = content;
+    return node;
   }
 
-  /* ── clock ───────────────────────────────────────── */
   function tick() {
-    const now = new Date();
+    const tickNow = new Date();
     document.getElementById('topDate').innerHTML =
-      `<strong>${now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</strong>`;
+      `<strong>${tickNow.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>`;
     document.getElementById('topTime').innerHTML =
-      `<strong>${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</strong>`;
+      `<strong>${tickNow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</strong>`;
   }
-  tick();
-  setInterval(tick, 30000);
 
-  /* ── static content ──────────────────────────────── */
-  /* ── labels ──────────────────────────────────────── */
-  const L = data.labels || {};
-  function lbl(id, fallback) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = L[id] !== undefined ? L[id] : fallback;
+  if (!appState.clockTimer) {
+    tick();
+    appState.clockTimer = setInterval(tick, 30000);
+  } else {
+    tick();
   }
-  lbl('commandTitle',    'Command Center');
-  lbl('todayPrefix',     'TODAY');
-  lbl('mustWinsLabel',   'Must-Wins:');
-  lbl('twoWeekTitle',    'The Radar: 2 Weeks');
-  lbl('twoWeekSubtitle', 'Timeline');
-  lbl('twoWeekDaysLeft', '14 Days Left');
-  lbl('weekTitle',       'The Horizon: 1 Week');
-  lbl('weekSubtitle',    'Timeline');
-  lbl('weekDaysLeft',    '7 Days Left');
+
+  const labels = data.labels || {};
+  function setLabel(id, fallback) {
+    const node = document.getElementById(id);
+    if (node) node.textContent = labels[id] !== undefined ? labels[id] : fallback;
+  }
+
+  setLabel('commandTitle', 'Command Center');
+  setLabel('todayPrefix', 'TODAY');
+  setLabel('mustWinsLabel', 'Must-Wins:');
+  setLabel('twoWeekTitle', 'The Radar: 2 Weeks');
+  setLabel('twoWeekSubtitle', 'Timeline');
+  setLabel('twoWeekDaysLeft', '14 Days Left');
+  setLabel('weekTitle', 'The Horizon: 1 Week');
+  setLabel('weekSubtitle', 'Timeline');
+  setLabel('weekDaysLeft', '7 Days Left');
 
   const sprintName = privacy.hideSprintName
     ? (privacy.hiddenSprintLabel || 'Personal Focus')
     : data.sprintName;
-  document.getElementById('sprintName').textContent   = sprintName;
-  document.getElementById('mustWins').textContent     = data.mustWinsRange;
+  document.getElementById('sprintName').textContent = sprintName;
+  document.getElementById('mustWins').textContent = data.mustWinsRange;
+
   const shutdownRitual = privacy.hideShutdownRitual
     ? (privacy.hiddenShutdownLabel || 'Review and reset')
     : data.shutdownRitual;
   document.getElementById('shutdownNote').textContent =
-    (L.shutdownPrefix || 'SHUTDOWN RITUAL') + ': ' + shutdownRitual;
+    `${labels.shutdownPrefix || 'SHUTDOWN RITUAL'}: ${shutdownRitual}`;
 
-  const ul = document.getElementById('taskList');
-  data.dailyTasks.forEach((t, index) => {
-    const taskText = privacy.maskTodayTasks
-      ? `${privacy.privateTaskLabel || 'Private task'} ${index + 1}`
-      : t.text;
-    const li = document.createElement('li');
-    li.className = 'task-item';
-    li.innerHTML = `
-      <span class="check ${t.done ? 'done' : 'pending'}">${t.done ? '✓' : ''}</span>
-      <span class="task-text ${t.done ? 'done' : ''}">${taskText}</span>`;
-    ul.appendChild(li);
-  });
+  const taskList = document.getElementById('taskList');
+  const addTaskButton = document.getElementById('addTaskButton');
+  const addWeekProjectButton = document.getElementById('addWeekProjectButton');
+  const addTwoWeekProjectButton = document.getElementById('addTwoWeekProjectButton');
+  taskList.innerHTML = '';
+  taskList.className = appState.isEditMode ? 'task-edit-list' : 'task-list';
+  addTaskButton.hidden = !appState.isEditMode;
+  addWeekProjectButton.hidden = !appState.isEditMode;
+  addTwoWeekProjectButton.hidden = !appState.isEditMode;
 
-  /* ── Gantt renderer ──────────────────────────────── */
-  function renderGantt(svgId, projects, totalDays, startDate) {
-    const svg  = document.getElementById(svgId);
+  if (appState.isEditMode) {
+    data.dailyTasks.forEach((task, index) => {
+      const li = document.createElement('li');
+      li.className = 'task-edit-row';
+
+      const toggle = document.createElement('button');
+      toggle.className = `task-toggle-button${task.done ? ' is-done' : ''}`;
+      toggle.type = 'button';
+      toggle.textContent = task.done ? '✓' : '';
+      toggle.addEventListener('click', () => {
+        task.done = !task.done;
+        renderDashboard();
+        scheduleDashboardSave();
+      });
+
+      const orderGroup = document.createElement('div');
+      orderGroup.className = 'task-order-group';
+
+      const moveUp = document.createElement('button');
+      moveUp.className = 'task-order-button';
+      moveUp.type = 'button';
+      moveUp.textContent = '↑';
+      moveUp.disabled = index === 0;
+      moveUp.addEventListener('click', () => {
+        if (moveArrayItem(data.dailyTasks, index, index - 1)) {
+          renderDashboard();
+          scheduleDashboardSave();
+        }
+      });
+
+      const moveDown = document.createElement('button');
+      moveDown.className = 'task-order-button';
+      moveDown.type = 'button';
+      moveDown.textContent = '↓';
+      moveDown.disabled = index === data.dailyTasks.length - 1;
+      moveDown.addEventListener('click', () => {
+        if (moveArrayItem(data.dailyTasks, index, index + 1)) {
+          renderDashboard();
+          scheduleDashboardSave();
+        }
+      });
+
+      orderGroup.appendChild(moveUp);
+      orderGroup.appendChild(moveDown);
+
+      const input = document.createElement('input');
+      input.className = `task-edit-input${task.done ? ' is-done' : ''}`;
+      input.type = 'text';
+      input.value = task.text || '';
+      input.placeholder = 'Task';
+      input.addEventListener('input', (event) => {
+        task.text = event.target.value;
+        input.classList.toggle('is-done', !!task.done);
+        scheduleDashboardSave();
+      });
+
+      const remove = document.createElement('button');
+      remove.className = 'task-remove-button';
+      remove.type = 'button';
+      remove.textContent = '×';
+      remove.addEventListener('click', () => {
+        data.dailyTasks.splice(index, 1);
+        renderDashboard();
+        scheduleDashboardSave();
+      });
+
+      li.appendChild(toggle);
+      li.appendChild(orderGroup);
+      li.appendChild(input);
+      li.appendChild(remove);
+      taskList.appendChild(li);
+    });
+  } else {
+    data.dailyTasks.forEach((task, index) => {
+      const taskText = privacy.maskTodayTasks
+        ? `${privacy.privateTaskLabel || 'Private task'} ${index + 1}`
+        : task.text;
+      const li = document.createElement('li');
+      li.className = 'task-item';
+      li.innerHTML = `
+        <span class="check ${task.done ? 'done' : 'pending'}">${task.done ? '✓' : ''}</span>
+        <span class="task-text ${task.done ? 'done' : ''}">${taskText}</span>`;
+      taskList.appendChild(li);
+    });
+  }
+
+  function drawWrappedLabel(svg, text, centerY, maxWidth, labelColor, labelSize) {
+    const fontSize = parseFloat(labelSize) || 11.5;
+    const lineHeight = fontSize * 1.28;
+    const words = text.split(' ');
+    const lines = [];
+
+    const probe = el('text', {
+      'font-size': labelSize,
+      'font-family': 'inherit',
+      'font-weight': '600',
+      opacity: '0',
+      x: '-9999',
+      y: '-9999'
+    }, svg);
+
+    let current = '';
+    for (const word of words) {
+      const candidate = current ? `${current} ${word}` : word;
+      probe.textContent = candidate;
+      if (probe.getComputedTextLength() <= maxWidth) {
+        current = candidate;
+      } else {
+        if (current) lines.push(current);
+        current = word;
+      }
+    }
+    if (current) lines.push(current);
+    svg.removeChild(probe);
+
+    const totalHeight = lines.length * lineHeight;
+    const startY = centerY - totalHeight / 2 + fontSize * 0.82;
+
+    const node = el('text', {
+      'text-anchor': 'start',
+      fill: labelColor,
+      'font-size': labelSize,
+      'font-family': 'inherit',
+      'font-weight': '600'
+    }, svg);
+
+    lines.forEach((line, lineIndex) => {
+      const span = document.createElementNS(NS, 'tspan');
+      span.setAttribute('x', '4');
+      span.setAttribute('y', String(startY + lineIndex * lineHeight));
+      span.textContent = line;
+      node.appendChild(span);
+    });
+  }
+
+  function renderGantt(svgId, groupKey, projects, totalDays, startDate) {
+    const svg = document.getElementById(svgId);
     const wrap = svg.parentElement;
     svg.innerHTML = '';
 
-    const W = wrap.clientWidth  || 400;
-    const H = wrap.clientHeight || 200;
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const width = wrap.clientWidth || 400;
+    const height = wrap.clientHeight || 200;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
-    const LP     = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-label-width')) || 118;
-    const RP     = 12;
-    const TOP    = 22;
-    const BOTTOM = 8;
-    const chartW = W - LP - RP;
-    const chartH = H - TOP - BOTTOM;
-
-    /* calculate current day offset from chart start */
-    const now = new Date();
+    const labelPadding = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-label-width')) || 118;
+    const rightPadding = 12;
+    const topPadding = 22;
+    const bottomPadding = 8;
+    const chartWidth = width - labelPadding - rightPadding;
+    const chartHeight = height - topPadding - bottomPadding;
     const msPerDay = 24 * 60 * 60 * 1000;
-    // In Rolling view, today is ALWAYS 0. In Fixed view, it's the actual offset from Monday.
-    const todayOffset = viewMode === "rolling" ? 0 : (now - startDate) / msPerDay;
+    const todayOffset = viewMode === "rolling" ? 0 : (todayMidnight - startDate) / msPerDay;
 
-    /* ── row height ─────── */
-    const maxRowH  = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-max-row-h')) || 38;
-    const barOpac  = getComputedStyle(root).getPropertyValue('--gantt-bar-opacity').trim() || '0.92';
-    const lblColor = getComputedStyle(root).getPropertyValue('--gantt-label-color').trim() || '#dde6f5';
-    const lblSize  = getComputedStyle(root).getPropertyValue('--gantt-label-size').trim()  || '11.5px';
-    const dayColor = getComputedStyle(root).getPropertyValue('--gantt-day-color').trim()   || '#94a3b8';
-    const daySize  = getComputedStyle(root).getPropertyValue('--gantt-day-size').trim()    || '10px';
-    const todayClr = getComputedStyle(root).getPropertyValue('--today-line').trim()        || '#ef4444';
+    const maxRowHeight = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-max-row-h')) || 38;
+    const barOpacity = getComputedStyle(root).getPropertyValue('--gantt-bar-opacity').trim() || '0.92';
+    const labelColor = getComputedStyle(root).getPropertyValue('--gantt-label-color').trim() || '#dde6f5';
+    const labelSize = getComputedStyle(root).getPropertyValue('--gantt-label-size').trim() || '11.5px';
+    const dayColor = getComputedStyle(root).getPropertyValue('--gantt-day-color').trim() || '#94a3b8';
+    const daySize = getComputedStyle(root).getPropertyValue('--gantt-day-size').trim() || '10px';
+    const todayColor = getComputedStyle(root).getPropertyValue('--today-line').trim() || '#ef4444';
 
-    const rowH     = Math.min(maxRowH, Math.max(22, Math.floor(chartH / projects.length)));
-    const barH     = Math.round(rowH * 0.50);
-    const barR     = 3;
+    const visibleProjects = projects
+      .map((project, index) => ({ project, index }))
+      .filter(({ project }) => {
+        const plannedStart = (() => {
+          if (!project.start) return null;
+          const date = new Date(`${project.start}T00:00:00`);
+          if (Number.isNaN(date.getTime())) return null;
+          return (date - startDate) / msPerDay;
+        })();
 
-    /* vertical grid + day labels */
-    const cellW = chartW / totalDays;
-    for (let d = 0; d <= totalDays; d++) {
-      const x = LP + (d / totalDays) * chartW;
+        const deadlineOffset = (() => {
+          if (!project.deadline) return null;
+          const date = new Date(`${project.deadline}T00:00:00`);
+          if (Number.isNaN(date.getTime())) return null;
+          return (date - startDate) / msPerDay;
+        })();
+
+        const visibleStart = plannedStart == null ? null : Math.max(plannedStart, todayOffset);
+        if (deadlineOffset === null || plannedStart === null || visibleStart === null) return false;
+        if (new Date(`${project.deadline}T23:59:59`).getTime() < now.getTime()) return false;
+        if (deadlineOffset < visibleStart) return false;
+        return true;
+      });
+
+    const rowHeight = Math.min(maxRowHeight, Math.max(22, Math.floor(chartHeight / Math.max(visibleProjects.length, 1))));
+    const barHeight = Math.round(rowHeight * 0.5);
+    const barRadius = 3;
+    const cellWidth = chartWidth / totalDays;
+
+    for (let dayIndex = 0; dayIndex <= totalDays; dayIndex += 1) {
+      const x = labelPadding + (dayIndex / totalDays) * chartWidth;
       el('line', {
-        x1: x, y1: TOP - 2, x2: x, y2: H - BOTTOM,
-        stroke: (d === 0 || d === totalDays)
-          ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)',
-        'stroke-width': (d === 0 || d === totalDays) ? 1.5 : 1
+        x1: x,
+        y1: topPadding - 2,
+        x2: x,
+        y2: height - bottomPadding,
+        stroke: (dayIndex === 0 || dayIndex === totalDays) ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)',
+        'stroke-width': (dayIndex === 0 || dayIndex === totalDays) ? 1.5 : 1
       }, svg);
-      
-      if (d < totalDays) {
-        // Calculate day label based on startDate
+
+      if (dayIndex < totalDays) {
         const dayDate = new Date(startDate);
-        dayDate.setDate(startDate.getDate() + d);
-        const label = viewMode === "fixed" ? dayDate.getDate() : d;
+        dayDate.setDate(startDate.getDate() + dayIndex);
+        const label = viewMode === "fixed" ? dayDate.getDate() : dayIndex;
 
         textEl(String(label), {
-          x: x + (cellW / 2), y: TOP - 5,
-          fill: dayColor, 'font-size': daySize, 'font-family': 'inherit', 'font-weight': '600',
+          x: x + cellWidth / 2,
+          y: topPadding - 5,
+          fill: dayColor,
+          'font-size': daySize,
+          'font-family': 'inherit',
+          'font-weight': '600',
           'text-anchor': 'middle'
         }, svg);
       }
     }
 
-    /* today line */
-    const todayX = LP + (todayOffset / totalDays) * chartW;
+    const todayX = labelPadding + (todayOffset / totalDays) * chartWidth;
     if (todayOffset >= 0 && todayOffset <= totalDays) {
       el('line', {
-        x1: todayX, y1: TOP - 2, x2: todayX, y2: H - BOTTOM,
-        stroke: todayClr, 'stroke-width': 2, 'stroke-dasharray': '4,3'
+        x1: todayX,
+        y1: topPadding - 2,
+        x2: todayX,
+        y2: height - bottomPadding,
+        stroke: todayColor,
+        'stroke-width': 2,
+        'stroke-dasharray': '4,3'
       }, svg);
-      
+
       textEl('Today', {
-        x: todayX + 4, y: TOP - 5,
-        fill: todayClr, 'font-size': daySize, 'font-weight': '700', 'font-family': 'inherit'
+        x: todayX + 4,
+        y: topPadding - 5,
+        fill: todayColor,
+        'font-size': daySize,
+        'font-weight': '700',
+        'font-family': 'inherit'
       }, svg);
     }
 
-    /* row separators */
-    projects.forEach((_, i) => {
-      if (i === 0) return;
+    visibleProjects.forEach((_, index) => {
+      if (index === 0) return;
       el('line', {
-        x1: 0, y1: TOP + i * rowH, x2: W, y2: TOP + i * rowH,
-        stroke: 'rgba(255,255,255,0.05)', 'stroke-width': 1
+        x1: 0,
+        y1: topPadding + index * rowHeight,
+        x2: width,
+        y2: topPadding + index * rowHeight,
+        stroke: 'rgba(255,255,255,0.05)',
+        'stroke-width': 1
       }, svg);
     });
 
-    /* ── word-wrap helper ─────────────────────────────
-       Splits text into lines that fit within maxW, then
-       renders them as <tspan> rows centred on barCenterY. */
-    function drawLabel(text, barCenterY, maxW) {
-      const fs    = parseFloat(lblSize) || 11.5;
-      const lineH = fs * 1.28;
-      const words = text.split(' ');
-      const lines = [];
+    visibleProjects.forEach(({ project, index: actualIndex }, visibleIndex) => {
+      const rowY = topPadding + visibleIndex * rowHeight;
+      const barY = rowY + Math.round((rowHeight - barHeight) / 2);
+      const barCenterY = barY + barHeight / 2;
 
-      /* measure with a temporary off-screen probe */
-      const probe = el('text', {
-        'font-size': lblSize, 'font-family': 'inherit',
-        'font-weight': '600', opacity: '0', x: '-9999', y: '-9999'
-      }, svg);
-
-      let cur = '';
-      for (const word of words) {
-        const trial = cur ? cur + ' ' + word : word;
-        probe.textContent = trial;
-        if (probe.getComputedTextLength() <= maxW) {
-          cur = trial;              // word fits — keep accumulating
-        } else {
-          if (cur) lines.push(cur); // wrap: save current line
-          cur = word;               // start new line with this word
-        }
-      }
-      if (cur) lines.push(cur);
-      svg.removeChild(probe);
-
-      /* vertically centre the block on the bar */
-      const totalH = lines.length * lineH;
-      const startY = barCenterY - totalH / 2 + fs * 0.82;
-      const LX     = 4; // left-aligned: start 4px from left edge
-
-      const node = el('text', {
-        'text-anchor': 'start', fill: lblColor,
-        'font-size': lblSize, 'font-family': 'inherit', 'font-weight': '600'
-      }, svg);
-      lines.forEach((line, li) => {
-        const span = document.createElementNS(NS, 'tspan');
-        span.setAttribute('x', LX);
-        span.setAttribute('y', startY + li * lineH);
-        span.textContent = line;
-        node.appendChild(span);
-      });
-    }
-
-    /* bars and deadlines */
-    projects.forEach((p, i) => {
-      const rowY      = TOP + i * rowH;
-      const barY      = rowY + Math.round((rowH - barH) / 2);
-      const barCenterY = barY + barH / 2;
-      
-      const msPerDay = 24 * 60 * 60 * 1000;
-      const getOffset = (dateStr) => {
+      const toOffset = (dateStr) => {
         if (!dateStr) return null;
-        const d = new Date(dateStr);
-        d.setHours(0,0,0,0);
-        return (d - startDate) / msPerDay;
+        const date = new Date(`${dateStr}T00:00:00`);
+        if (Number.isNaN(date.getTime())) return null;
+        return (date - startDate) / msPerDay;
       };
 
-      // Bar starts from the planned start or today, whichever is later
-      const plannedStart = getOffset(p.start);
-      const startOff = Math.max(plannedStart, todayOffset); 
-      const deadOff  = getOffset(p.deadline);
+      const plannedStart = toOffset(project.start);
+      const visibleStart = Math.max(plannedStart, todayOffset);
+      const deadlineOffset = toOffset(project.deadline);
 
-      // Only render if deadline exists and is in the future relative to today
-      if (deadOff === null || (new Date(p.deadline)).setHours(23,59,59,999) < now.getTime()) return;
-      if (deadOff < startOff) return; // Deadline must be after start
+      if (deadlineOffset === null || plannedStart === null) return;
+      if (new Date(`${project.deadline}T23:59:59`).getTime() < now.getTime()) return;
+      if (deadlineOffset < visibleStart) return;
 
-      const x1 = LP + (startOff / totalDays) * chartW;
-      const x2 = LP + (Math.max(startOff + 0.05, deadOff + 1) / totalDays) * chartW; 
-      const bw = Math.max(2, x2 - x1);
+      const x1 = labelPadding + (visibleStart / totalDays) * chartWidth;
+      const x2 = labelPadding + (Math.max(visibleStart + 0.05, deadlineOffset + 1) / totalDays) * chartWidth;
+      const barWidth = Math.max(2, x2 - x1);
 
-      /* project label with urgency */
-      let labelText = p.name;
-      const daysLeft = Math.ceil((new Date(p.deadline) - now) / msPerDay);
-      if (daysLeft >= 0 && daysLeft <= 7) labelText += ` (${daysLeft}d)`;
-      
-      drawLabel(labelText, barCenterY, LP - 8);
+      let labelText = project.name;
+      const daysLeft = Math.ceil((new Date(`${project.deadline}T00:00:00`) - now) / msPerDay);
+      if (daysLeft >= 0 && daysLeft <= 7) {
+        labelText += ` (${daysLeft}d)`;
+      }
 
-      /* glow */
-      el('rect', { x: x1-1, y: barY+1, width: bw+2, height: barH,
-        rx: barR+1, fill: p.color, opacity: '0.20' }, svg);
-      /* bar */
-      el('rect', { x: x1, y: barY, width: bw, height: barH,
-        rx: barR, fill: p.color, opacity: barOpac }, svg);
-      /* shine */
-      el('rect', { x: x1+2, y: barY+2, width: Math.max(0, bw-4),
-        height: Math.floor(barH * 0.35), rx: 2, fill: '#fff', opacity: '0.14' }, svg);
+      drawWrappedLabel(svg, labelText, barCenterY, labelPadding - 8, labelColor, labelSize);
+
+      const isSelected = appState.selectedProject
+        && appState.selectedProject.group === groupKey
+        && appState.selectedProject.index === actualIndex;
+
+      if (appState.isEditMode) {
+        const buttonSize = 18;
+        const buttonGap = 6;
+        const buttonX = labelPadding - buttonSize - 6;
+        const upY = barY;
+        const downY = barY + buttonSize + buttonGap;
+
+        const drawRowButton = (x, y, label, disabled, onClick) => {
+          const hitArea = el('g', {
+            class: 'gantt-row-control'
+          }, svg);
+
+          el('rect', {
+            x,
+            y,
+            width: buttonSize,
+            height: buttonSize,
+            rx: 4,
+            fill: disabled ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.12)',
+            stroke: 'rgba(255,255,255,0.18)',
+            'stroke-width': 1
+          }, hitArea);
+
+          textEl(label, {
+            x: x + buttonSize / 2,
+            y: y + buttonSize - 4,
+            fill: disabled ? 'rgba(255,255,255,0.25)' : '#ffffff',
+            'font-size': '13px',
+            'font-weight': '700',
+            'font-family': 'inherit',
+            'text-anchor': 'middle',
+            'pointer-events': 'none'
+          }, hitArea);
+
+          if (!disabled) {
+            hitArea.addEventListener('click', (event) => {
+              event.stopPropagation();
+              onClick();
+            });
+          }
+        };
+
+        drawRowButton(buttonX, upY, '↑', visibleIndex === 0, () => {
+          if (moveArrayItem(projects, actualIndex, actualIndex - 1)) {
+            appState.selectedProject = { group: groupKey, index: actualIndex - 1 };
+            renderDashboard();
+            scheduleDashboardSave();
+          }
+        });
+
+        drawRowButton(buttonX, downY, '↓', visibleIndex === visibleProjects.length - 1, () => {
+          if (moveArrayItem(projects, actualIndex, actualIndex + 1)) {
+            appState.selectedProject = { group: groupKey, index: actualIndex + 1 };
+            renderDashboard();
+            scheduleDashboardSave();
+          }
+        });
+      }
+
+      el('rect', {
+        x: x1 - 1,
+        y: barY + 1,
+        width: barWidth + 2,
+        height: barHeight,
+        rx: barRadius + 1,
+        fill: project.color,
+        opacity: '0.20'
+      }, svg);
+
+      const barRect = el('rect', {
+        x: x1,
+        y: barY,
+        width: barWidth,
+        height: barHeight,
+        rx: barRadius,
+        fill: project.color,
+        opacity: barOpacity,
+        class: appState.isEditMode ? 'gantt-project-hit' : ''
+      }, svg);
+
+      el('rect', {
+        x: x1 + 2,
+        y: barY + 2,
+        width: Math.max(0, barWidth - 4),
+        height: Math.floor(barHeight * 0.35),
+        rx: 2,
+        fill: '#fff',
+        opacity: '0.14'
+      }, svg);
+
+      if (isSelected) {
+        el('rect', {
+          x: x1 - 3,
+          y: barY - 3,
+          width: barWidth + 6,
+          height: barHeight + 6,
+          rx: barRadius + 3,
+          fill: 'none',
+          stroke: '#bfdbfe',
+          'stroke-width': 2,
+          class: 'gantt-selection-outline'
+        }, svg);
+
+        el('text', {
+          x: x1 + 8,
+          y: barY - 8,
+          fill: '#bfdbfe',
+          'font-size': '10px',
+          'font-weight': '700',
+          'font-family': 'inherit',
+          class: 'gantt-selection-badge'
+        }, svg).textContent = 'SELECTED';
+      }
+
+      if (appState.isEditMode) {
+        barRect.addEventListener('click', () => {
+          appState.selectedProject = { group: groupKey, index: actualIndex };
+          renderDashboard();
+        });
+      }
     });
-
-    /* "Today" label is handled inside renderGantt now */
   }
 
-  /* ── render + resize ─────────────────────────────── */
-  function renderAll() {
-    renderGantt('weekGantt',    data.weekProjects,    weekDays, weekStart);
-    renderGantt('twoWeekGantt', data.twoWeekProjects, twoWeekDays, twoWeekStart);
+  const selectedProject = getSelectedProject();
+  if (!selectedProject) {
+    appState.selectedProject = null;
   }
 
-  requestAnimationFrame(() => setTimeout(renderAll, 80));
+  renderGantt('weekGantt', 'weekProjects', data.weekProjects, weekDays, weekStart);
+  renderGantt('twoWeekGantt', 'twoWeekProjects', data.twoWeekProjects, twoWeekDays, twoWeekStart);
 
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(renderAll, 120);
-  });
+  const inspector = document.getElementById('projectInspector');
+  const inspectorName = document.getElementById('inspectorName');
+  const inspectorScope = document.getElementById('inspectorScope');
+  const projectNameInput = document.getElementById('projectNameInput');
+  const projectStartInput = document.getElementById('projectStartInput');
+  const projectDeadlineInput = document.getElementById('projectDeadlineInput');
+  const removeProjectButton = document.getElementById('removeProjectButton');
+
+  if (appState.isEditMode && selectedProject) {
+    const bounds = getProjectBounds(appState.selectedProject, selectedProject);
+    inspector.classList.add('visible');
+    inspectorName.textContent = selectedProject.name || 'Untitled Project';
+    inspectorScope.textContent = appState.selectedProject.group === 'weekProjects' ? '1-Week Horizon Project' : '2-Week Radar Project';
+    projectNameInput.value = selectedProject.name || '';
+    projectStartInput.value = selectedProject.start || '';
+    projectDeadlineInput.value = selectedProject.deadline || '';
+    projectStartInput.min = bounds.startMin;
+    projectStartInput.max = bounds.startMax;
+    projectDeadlineInput.min = bounds.deadlineMin;
+    projectDeadlineInput.max = bounds.deadlineMax;
+    document.getElementById('inspectorHelp').textContent = `${bounds.help} Use the row arrows to reorder projects. Arrow keys move the whole project, Shift+Arrow adjusts ending date, Option+Arrow adjusts beginning date.`;
+    removeProjectButton.disabled = false;
+  } else {
+    inspector.classList.remove('visible');
+    projectNameInput.value = '';
+    projectStartInput.value = '';
+    projectDeadlineInput.value = '';
+    projectStartInput.min = '';
+    projectStartInput.max = '';
+    projectDeadlineInput.min = '';
+    projectDeadlineInput.max = '';
+    document.getElementById('inspectorHelp').textContent =
+      'Date edits are saved directly to the dashboard data and work in both rolling and fixed views.';
+    removeProjectButton.disabled = true;
+  }
+}
+
+function addProject(groupKey) {
+  if (!appState.data) return;
+  const ranges = getCurrentHorizonRanges();
+  const start = toIsoDate(ranges.today);
+  const deadline = groupKey === 'twoWeekProjects'
+    ? toIsoDate(ranges.twoWeekDay8)
+    : toIsoDate(ranges.weekMax);
+
+  const project = {
+    name: '',
+    start,
+    deadline,
+    color: '#4a90d9'
+  };
+
+  appState.data[groupKey].push(project);
+  appState.selectedProject = {
+    group: groupKey,
+    index: appState.data[groupKey].length - 1
+  };
+  renderDashboard();
+  scheduleDashboardSave();
 }
 
 document.addEventListener('DOMContentLoaded', loadDataFromStore);
