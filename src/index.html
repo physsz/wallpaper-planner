@@ -314,9 +314,53 @@ function initDashboard(data) {
   const NS   = 'http://www.w3.org/2000/svg';
   const root = document.documentElement;
   const privacy = data.privacy || {};
-
-  /* ── apply every appearance option from tasks.js ── */
   const app = data.appearance || {};
+
+  /* ── Time Calculations ── */
+  const now = new Date();
+  const viewMode = app.viewMode || "rolling";
+
+  function formatDateRange(start, days) {
+    const end = new Date(start);
+    end.setDate(start.getDate() + days);
+    return `${start.toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${end.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
+  }
+
+  // Calculate offsets for Gantt rendering
+  let weekStart, weekDays, twoWeekStart, twoWeekDays;
+  let weekSubtitle, twoWeekSubtitle;
+
+  if (viewMode === "fixed") {
+    // Current Week (Mon-Sun)
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+    const monday = new Date(now.setDate(diff));
+    monday.setHours(0,0,0,0);
+    
+    weekStart = monday;
+    weekDays = 7;
+    weekSubtitle = `Week of ${monday.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
+
+    // Next 2 Weeks
+    twoWeekStart = monday;
+    twoWeekDays = 14;
+    twoWeekSubtitle = `Current & Next Week`;
+  } else {
+    // Rolling (Default)
+    weekStart = new Date();
+    weekDays = 7;
+    weekSubtitle = "7-Day Horizon";
+
+    twoWeekStart = new Date();
+    twoWeekDays = 14;
+    twoWeekSubtitle = "14-Day Radar";
+  }
+
+  document.getElementById('weekSubtitle').textContent = weekSubtitle;
+  document.getElementById('twoWeekSubtitle').textContent = twoWeekSubtitle;
+  document.getElementById('weekDaysLeft').textContent = `${weekDays} Days`;
+  document.getElementById('twoWeekDaysLeft').textContent = `${twoWeekDays} Days`;
+  
   function setVar(name, val) {
     if (val != null) root.style.setProperty(name, val);
   }
@@ -421,7 +465,7 @@ function initDashboard(data) {
   });
 
   /* ── Gantt renderer ──────────────────────────────── */
-  function renderGantt(svgId, projects, totalDays) {
+  function renderGantt(svgId, projects, totalDays, startDate) {
     const svg  = document.getElementById(svgId);
     const wrap = svg.parentElement;
     svg.innerHTML = '';
@@ -437,7 +481,12 @@ function initDashboard(data) {
     const chartW = W - LP - RP;
     const chartH = H - TOP - BOTTOM;
 
-    /* ── row height: capped by ganttMaxRowHeight ─────── */
+    /* calculate current day offset from chart start */
+    const now = new Date();
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const todayOffset = (now - startDate) / msPerDay;
+
+    /* ── row height ─────── */
     const maxRowH  = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-max-row-h')) || 38;
     const barOpac  = getComputedStyle(root).getPropertyValue('--gantt-bar-opacity').trim() || '0.92';
     const lblColor = getComputedStyle(root).getPropertyValue('--gantt-label-color').trim() || '#dde6f5';
@@ -459,17 +508,31 @@ function initDashboard(data) {
           ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)',
         'stroke-width': (d === 0 || d === totalDays) ? 1.5 : 1
       }, svg);
-      textEl(String(d), {
+      
+      // Calculate day label based on startDate
+      const dayDate = new Date(startDate);
+      dayDate.setDate(startDate.getDate() + d);
+      const label = viewMode === "fixed" ? dayDate.getDate() : d;
+
+      textEl(String(label), {
         x: x + 3, y: TOP - 5,
         fill: dayColor, 'font-size': daySize, 'font-family': 'inherit', 'font-weight': '600'
       }, svg);
     }
 
     /* today line */
-    el('line', {
-      x1: LP, y1: TOP - 2, x2: LP, y2: H - BOTTOM,
-      stroke: todayClr, 'stroke-width': 2, 'stroke-dasharray': '4,3'
-    }, svg);
+    const todayX = LP + (todayOffset / totalDays) * chartW;
+    if (todayOffset >= 0 && todayOffset <= totalDays) {
+      el('line', {
+        x1: todayX, y1: TOP - 2, x2: todayX, y2: H - BOTTOM,
+        stroke: todayClr, 'stroke-width': 2, 'stroke-dasharray': '4,3'
+      }, svg);
+      
+      textEl('Today', {
+        x: todayX + 4, y: TOP - 5,
+        fill: todayClr, 'font-size': daySize, 'font-weight': '700', 'font-family': 'inherit'
+      }, svg);
+    }
 
     /* row separators */
     projects.forEach((_, i) => {
@@ -550,17 +613,13 @@ function initDashboard(data) {
         height: Math.floor(barH * 0.35), rx: 2, fill: '#fff', opacity: '0.14' }, svg);
     });
 
-    /* "Today" label */
-    textEl('Today', {
-      x: LP + 4, y: TOP - 5,
-      fill: todayClr, 'font-size': daySize, 'font-weight': '700', 'font-family': 'inherit'
-    }, svg);
+    /* "Today" label is handled inside renderGantt now */
   }
 
   /* ── render + resize ─────────────────────────────── */
   function renderAll() {
-    renderGantt('weekGantt',    data.weekProjects,    7);
-    renderGantt('twoWeekGantt', data.twoWeekProjects, 14);
+    renderGantt('weekGantt',    data.weekProjects,    weekDays, weekStart);
+    renderGantt('twoWeekGantt', data.twoWeekProjects, twoWeekDays, twoWeekStart);
   }
 
   requestAnimationFrame(() => setTimeout(renderAll, 80));
