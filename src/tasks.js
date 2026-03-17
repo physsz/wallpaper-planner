@@ -19,6 +19,7 @@ window.tasksData = {
     panelGap: 14,              // gap between panels in px
 
     // Layout — use "1fr", "2fr", or "300px" for each column
+    viewMode: "rolling", // "rolling" (7/14 days) or "fixed" (Calendar Week)
     columns: {
       left: "1fr",    // 2-week radar
       center: "600px",  // command center (today's tasks)

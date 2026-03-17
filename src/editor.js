@@ -31,6 +31,9 @@ async function init() {
 }
 
 function render() {
+  const viewModeEl = document.getElementById('viewMode');
+  if (viewModeEl) viewModeEl.value = currentData.appearance.viewMode || 'rolling';
+
   const taskList = document.getElementById('taskList');
   if (!taskList) return;
   taskList.innerHTML = '';
@@ -66,6 +69,10 @@ function renderProjects(id, projects) {
     container.appendChild(div);
   });
 }
+
+window.updateViewMode = (val) => {
+  currentData.appearance.viewMode = val;
+};
 
 window.addTask = () => {
   currentData.dailyTasks.push({ text: "", done: false });
