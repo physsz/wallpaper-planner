@@ -38,7 +38,10 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html { background: transparent !important; }
+
   body {
+    background: transparent !important;
     background-image: url('wallpaper.jpg');
     background-size: cover;
     background-position: center;
@@ -86,7 +89,7 @@
     display: grid;
     grid-template-columns: var(--col-left) var(--center-width) var(--col-right);
     gap: var(--panel-gap);
-    padding: var(--panel-gap);
+    padding: 40px var(--panel-gap) var(--panel-gap) var(--panel-gap);
     flex: 1;
     min-height: 0;
   }
@@ -271,6 +274,7 @@ function initDashboard() {
   const data = window.tasksData;
   const NS   = 'http://www.w3.org/2000/svg';
   const root = document.documentElement;
+  const privacy = data.privacy || {};
 
   /* ── apply every appearance option from tasks.js ── */
   const app = data.appearance || {};
@@ -353,17 +357,27 @@ function initDashboard() {
   lbl('weekSubtitle',    'Timeline');
   lbl('weekDaysLeft',    '7 Days Left');
 
-  document.getElementById('sprintName').textContent   = data.sprintName;
+  const sprintName = privacy.hideSprintName
+    ? (privacy.hiddenSprintLabel || 'Personal Focus')
+    : data.sprintName;
+  document.getElementById('sprintName').textContent   = sprintName;
   document.getElementById('mustWins').textContent     = data.mustWinsRange;
-  document.getElementById('shutdownNote').textContent = (L.shutdownPrefix || 'SHUTDOWN RITUAL') + ': ' + data.shutdownRitual;
+  const shutdownRitual = privacy.hideShutdownRitual
+    ? (privacy.hiddenShutdownLabel || 'Review and reset')
+    : data.shutdownRitual;
+  document.getElementById('shutdownNote').textContent =
+    (L.shutdownPrefix || 'SHUTDOWN RITUAL') + ': ' + shutdownRitual;
 
   const ul = document.getElementById('taskList');
-  data.dailyTasks.forEach(t => {
+  data.dailyTasks.forEach((t, index) => {
+    const taskText = privacy.maskTodayTasks
+      ? `${privacy.privateTaskLabel || 'Private task'} ${index + 1}`
+      : t.text;
     const li = document.createElement('li');
     li.className = 'task-item';
     li.innerHTML = `
       <span class="check ${t.done ? 'done' : 'pending'}">${t.done ? '✓' : ''}</span>
-      <span class="task-text ${t.done ? 'done' : ''}">${t.text}</span>`;
+      <span class="task-text ${t.done ? 'done' : ''}">${taskText}</span>`;
     ul.appendChild(li);
   });
 
