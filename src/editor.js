@@ -60,11 +60,28 @@ function renderProjects(id, projects) {
   projects.forEach((p, i) => {
     const div = document.createElement('div');
     div.className = 'task-row';
+    div.style.flexDirection = 'column';
+    div.style.alignItems = 'stretch';
+    div.style.background = 'rgba(0,0,0,0.1)';
+    div.style.padding = '10px';
+    div.style.borderRadius = '8px';
+    div.style.gap = '5px';
+
     div.innerHTML = `
-      <input type="text" placeholder="Name" value="${p.name}" oninput="updateProject('${id}', ${i}, 'name', this.value)" style="flex: 2">
-      <input type="text" placeholder="Start" value="${p.start}" oninput="updateProject('${id}', ${i}, 'start', this.value)" style="flex: 0.5">
-      <input type="text" placeholder="End" value="${p.end}" oninput="updateProject('${id}', ${i}, 'end', this.value)" style="flex: 0.5">
-      <button class="danger" onclick="removeProject('${id}', ${i})">×</button>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" placeholder="Project Name" value="${p.name}" oninput="updateProject('${id}', ${i}, 'name', this.value)" style="flex: 1">
+        <button class="danger" onclick="removeProject('${id}', ${i})">×</button>
+      </div>
+      <div style="display: flex; gap: 10px; font-size: 0.8rem; color: #94a3b8;">
+        <div style="flex: 1">
+          <label style="display:block;margin-bottom:2px">Start Date</label>
+          <input type="date" value="${p.start}" oninput="updateProject('${id}', ${i}, 'start', this.value)" style="width: 100%">
+        </div>
+        <div style="flex: 1">
+          <label style="display:block;margin-bottom:2px">Deadline</label>
+          <input type="date" value="${p.deadline || ''}" oninput="updateProject('${id}', ${i}, 'deadline', this.value)" style="width: 100%">
+        </div>
+      </div>
     `;
     container.appendChild(div);
   });
@@ -90,7 +107,8 @@ window.updateTask = (i, key, val) => {
 
 window.addProject = (type) => {
   const key = type === 'week' ? 'weekProjects' : 'twoWeekProjects';
-  currentData[key].push({ name: "", start: 0, end: 1, color: "#4a90d9" });
+  const today = new Date().toISOString().split('T')[0];
+  currentData[key].push({ name: "", start: today, deadline: today, color: "#4a90d9" });
   render();
 };
 
@@ -100,9 +118,7 @@ window.removeProject = (containerId, i) => {
 };
 
 window.updateProject = (containerId, i, key, val) => {
-  let finalVal = val;
-  if (key === 'start' || key === 'end') finalVal = parseInt(val) || 0;
-  currentData[containerId][i][key] = finalVal;
+  currentData[containerId][i][key] = val;
 };
 
 window.saveData = async () => {
