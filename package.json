@@ -1,0 +1,31 @@
+{
+  "name": "wallpaper-planner",
+  "version": "1.0.0",
+  "description": "A productivity planner overlay for your macOS desktop wallpaper. It layers Gantt-style project timelines and a daily task list on top of your existing wallpaper, turning your desktop into an always-visible planning dashboard — powered by [Plash](https://sindresorhus.com/plash).",
+  "main": "tasks.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/physsz/wallpaper-planner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/physsz/wallpaper-planner/issues"
+  },
+  "homepage": "https://github.com/physsz/wallpaper-planner#readme",
+  "devDependencies": {
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/cli": "^2.10.1"
+  }
+}

@@ -1,13 +1,6 @@
-# Node.js
 node_modules/
-package-lock.json
-
-# Rust (Tauri)
 src-tauri/target/
 src-tauri/Cargo.lock
-
-# macOS
-.DS_Store
-
-# Wallpaper
+package-lock.json
 src/wallpaper-export.png
+.DS_Store
