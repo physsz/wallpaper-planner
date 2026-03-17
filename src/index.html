@@ -318,13 +318,10 @@ function initDashboard(data) {
 
   /* ── Time Calculations ── */
   const now = new Date();
-  const viewMode = app.viewMode || "rolling";
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0,0,0,0);
 
-  function formatDateRange(start, days) {
-    const end = new Date(start);
-    end.setDate(start.getDate() + days);
-    return `${start.toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${end.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
-  }
+  const viewMode = app.viewMode || "rolling";
 
   // Calculate offsets for Gantt rendering
   let weekStart, weekDays, twoWeekStart, twoWeekDays;
@@ -333,25 +330,23 @@ function initDashboard(data) {
   if (viewMode === "fixed") {
     // Current Week (Mon-Sun)
     const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-    const monday = new Date(now.setDate(diff));
-    monday.setHours(0,0,0,0);
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    weekStart = new Date(now.setDate(diff));
+    weekStart.setHours(0,0,0,0);
     
-    weekStart = monday;
     weekDays = 7;
-    weekSubtitle = `Week of ${monday.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
+    weekSubtitle = `Week of ${weekStart.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
 
-    // Next 2 Weeks
-    twoWeekStart = monday;
+    twoWeekStart = new Date(weekStart);
     twoWeekDays = 14;
     twoWeekSubtitle = `Current & Next Week`;
   } else {
     // Rolling (Default)
-    weekStart = new Date();
+    weekStart = new Date(todayMidnight);
     weekDays = 7;
     weekSubtitle = "7-Day Horizon";
 
-    twoWeekStart = new Date();
+    twoWeekStart = new Date(todayMidnight);
     twoWeekDays = 14;
     twoWeekSubtitle = "14-Day Radar";
   }
@@ -484,7 +479,8 @@ function initDashboard(data) {
     /* calculate current day offset from chart start */
     const now = new Date();
     const msPerDay = 24 * 60 * 60 * 1000;
-    const todayOffset = (now - startDate) / msPerDay;
+    // In Rolling view, today is ALWAYS 0. In Fixed view, it's the actual offset from Monday.
+    const todayOffset = viewMode === "rolling" ? 0 : (now - startDate) / msPerDay;
 
     /* ── row height ─────── */
     const maxRowH  = parseFloat(getComputedStyle(root).getPropertyValue('--gantt-max-row-h')) || 38;
@@ -500,6 +496,7 @@ function initDashboard(data) {
     const barR     = 3;
 
     /* vertical grid + day labels */
+    const cellW = chartW / totalDays;
     for (let d = 0; d <= totalDays; d++) {
       const x = LP + (d / totalDays) * chartW;
       el('line', {
@@ -509,15 +506,18 @@ function initDashboard(data) {
         'stroke-width': (d === 0 || d === totalDays) ? 1.5 : 1
       }, svg);
       
-      // Calculate day label based on startDate
-      const dayDate = new Date(startDate);
-      dayDate.setDate(startDate.getDate() + d);
-      const label = viewMode === "fixed" ? dayDate.getDate() : d;
+      if (d < totalDays) {
+        // Calculate day label based on startDate
+        const dayDate = new Date(startDate);
+        dayDate.setDate(startDate.getDate() + d);
+        const label = viewMode === "fixed" ? dayDate.getDate() : d;
 
-      textEl(String(label), {
-        x: x + 3, y: TOP - 5,
-        fill: dayColor, 'font-size': daySize, 'font-family': 'inherit', 'font-weight': '600'
-      }, svg);
+        textEl(String(label), {
+          x: x + (cellW / 2), y: TOP - 5,
+          fill: dayColor, 'font-size': daySize, 'font-family': 'inherit', 'font-weight': '600',
+          'text-anchor': 'middle'
+        }, svg);
+      }
     }
 
     /* today line */
@@ -590,17 +590,39 @@ function initDashboard(data) {
       });
     }
 
-    /* bars */
+    /* bars and deadlines */
     projects.forEach((p, i) => {
       const rowY      = TOP + i * rowH;
       const barY      = rowY + Math.round((rowH - barH) / 2);
       const barCenterY = barY + barH / 2;
-      const x1        = LP + (p.start / totalDays) * chartW;
-      const x2        = LP + (p.end   / totalDays) * chartW;
-      const bw        = Math.max(barR * 2, x2 - x1);
+      
+      const msPerDay = 24 * 60 * 60 * 1000;
+      const getOffset = (dateStr) => {
+        if (!dateStr) return null;
+        const d = new Date(dateStr);
+        d.setHours(0,0,0,0);
+        return (d - startDate) / msPerDay;
+      };
 
-      /* wrapped label */
-      drawLabel(p.name, barCenterY, LP - 8);
+      // Bar starts from the planned start or today, whichever is later
+      const plannedStart = getOffset(p.start);
+      const startOff = Math.max(plannedStart, todayOffset); 
+      const deadOff  = getOffset(p.deadline);
+
+      // Only render if deadline exists and is in the future relative to today
+      if (deadOff === null || (new Date(p.deadline)).setHours(23,59,59,999) < now.getTime()) return;
+      if (deadOff < startOff) return; // Deadline must be after start
+
+      const x1 = LP + (startOff / totalDays) * chartW;
+      const x2 = LP + (Math.max(startOff + 0.05, deadOff + 1) / totalDays) * chartW; 
+      const bw = Math.max(2, x2 - x1);
+
+      /* project label with urgency */
+      let labelText = p.name;
+      const daysLeft = Math.ceil((new Date(p.deadline) - now) / msPerDay);
+      if (daysLeft >= 0 && daysLeft <= 7) labelText += ` (${daysLeft}d)`;
+      
+      drawLabel(labelText, barCenterY, LP - 8);
 
       /* glow */
       el('rect', { x: x1-1, y: barY+1, width: bw+2, height: barH,
