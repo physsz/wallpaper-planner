@@ -11,6 +11,7 @@ src-tauri/Cargo.lock
 
 # Local agent journal
 AGENT.md
+development_journal.md
 
 # Wallpaper
 src/wallpaper-export.png

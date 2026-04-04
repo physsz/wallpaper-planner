@@ -326,6 +326,77 @@
     background: rgba(255,255,255,0.14);
   }
 
+  .privacy-controls {
+    display: none;
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+  }
+
+  body.dashboard-edit-mode .privacy-controls {
+    display: grid;
+    gap: 12px;
+  }
+
+  .privacy-title {
+    font-size: 0.78em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #bfdbfe;
+    font-weight: 700;
+  }
+
+  .privacy-note {
+    font-size: 0.78em;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .privacy-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.84em;
+    color: #fff;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+
+  .privacy-toggle input {
+    margin-top: 2px;
+    accent-color: #60a5fa;
+  }
+
+  .privacy-field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .privacy-field label {
+    display: block;
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .privacy-field input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 10px 12px;
+    font: inherit;
+  }
+
+  .privacy-field input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .edit-mode-banner,
   .project-inspector {
     position: fixed;
@@ -520,6 +591,36 @@
     <div class="sprint-row"><span id="todayPrefix"></span>: <span id="sprintName"></span></div>
     <ul class="task-list" id="taskList"></ul>
     <button class="task-add-button" id="addTaskButton" type="button" hidden>Add Task</button>
+    <div class="privacy-controls" id="privacyControls" hidden>
+      <div class="privacy-title">Privacy On Wallpaper</div>
+      <div class="privacy-note">
+        Mask desktop-visible text without changing the underlying saved tasks. Task masking applies after you leave edit mode.
+      </div>
+      <label class="privacy-toggle" for="maskTodayTasksToggle">
+        <input id="maskTodayTasksToggle" type="checkbox">
+        <span>Mask today task names with numbered placeholders.</span>
+      </label>
+      <div class="privacy-field">
+        <label for="privateTaskLabelInput">Masked Task Label</label>
+        <input id="privateTaskLabelInput" type="text" placeholder="Private task" autocomplete="off">
+      </div>
+      <label class="privacy-toggle" for="hideSprintNameToggle">
+        <input id="hideSprintNameToggle" type="checkbox">
+        <span>Hide the sprint name on the desktop.</span>
+      </label>
+      <div class="privacy-field">
+        <label for="hiddenSprintLabelInput">Hidden Sprint Label</label>
+        <input id="hiddenSprintLabelInput" type="text" placeholder="Personal Focus" autocomplete="off">
+      </div>
+      <label class="privacy-toggle" for="hideShutdownRitualToggle">
+        <input id="hideShutdownRitualToggle" type="checkbox">
+        <span>Hide the shutdown ritual text on the desktop.</span>
+      </label>
+      <div class="privacy-field">
+        <label for="hiddenShutdownLabelInput">Hidden Shutdown Label</label>
+        <input id="hiddenShutdownLabelInput" type="text" placeholder="Review and reset" autocomplete="off">
+      </div>
+    </div>
     <div class="divider"></div>
     <div class="must-wins-label" id="mustWinsLabel"></div>
     <div class="must-wins-badge" id="mustWins"></div>
@@ -596,15 +697,59 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function mergeNestedSection(templateSection, savedSection) {
+  const templateValue = templateSection && typeof templateSection === 'object' ? clone(templateSection) : {};
+  const savedValue = savedSection && typeof savedSection === 'object' ? savedSection : {};
+  return {
+    ...templateValue,
+    ...savedValue
+  };
+}
+
 function mergeData(template, saved) {
   if (!saved || saved === null) return clone(template);
   return {
     ...clone(template),
     ...saved,
-    dailyTasks: saved.dailyTasks || [],
-    weekProjects: saved.weekProjects || [],
-    twoWeekProjects: saved.twoWeekProjects || []
+    appearance: mergeNestedSection(template.appearance, saved.appearance),
+    labels: mergeNestedSection(template.labels, saved.labels),
+    privacy: mergeNestedSection(template.privacy, saved.privacy),
+    dailyTasks: Array.isArray(saved.dailyTasks) ? saved.dailyTasks : [],
+    weekProjects: Array.isArray(saved.weekProjects) ? saved.weekProjects : [],
+    twoWeekProjects: Array.isArray(saved.twoWeekProjects) ? saved.twoWeekProjects : []
   };
+}
+
+function ensurePrivacyData() {
+  if (!appState.data) return {};
+
+  const defaults = appState.template?.privacy || window.tasksData?.privacy || {};
+  const current = appState.data.privacy && typeof appState.data.privacy === 'object'
+    ? appState.data.privacy
+    : {};
+
+  appState.data.privacy = {
+    ...defaults,
+    ...current
+  };
+
+  return appState.data.privacy;
+}
+
+function getDisplayedSprintName(data, privacy) {
+  return privacy.hideSprintName
+    ? (privacy.hiddenSprintLabel || 'Personal Focus')
+    : data.sprintName;
+}
+
+function getDisplayedShutdownText(data, privacy) {
+  return privacy.hideShutdownRitual
+    ? (privacy.hiddenShutdownLabel || 'Review and reset')
+    : data.shutdownRitual;
+}
+
+function getShutdownNoteText(data, labels, privacy) {
+  return `${labels.shutdownPrefix || 'SHUTDOWN RITUAL'}: ${getDisplayedShutdownText(data, privacy)}`;
 }
 
 function getProjectArray(projectRef) {
@@ -788,6 +933,47 @@ function bindUI() {
     addProject('twoWeekProjects');
   });
 
+  document.getElementById('maskTodayTasksToggle').addEventListener('change', (event) => {
+    const privacy = ensurePrivacyData();
+    privacy.maskTodayTasks = event.target.checked;
+    renderDashboard();
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('privateTaskLabelInput').addEventListener('input', (event) => {
+    const privacy = ensurePrivacyData();
+    privacy.privateTaskLabel = event.target.value;
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('hideSprintNameToggle').addEventListener('change', (event) => {
+    const privacy = ensurePrivacyData();
+    privacy.hideSprintName = event.target.checked;
+    renderDashboard();
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('hiddenSprintLabelInput').addEventListener('input', (event) => {
+    const privacy = ensurePrivacyData();
+    privacy.hiddenSprintLabel = event.target.value;
+    document.getElementById('sprintName').textContent = getDisplayedSprintName(appState.data, privacy);
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('hideShutdownRitualToggle').addEventListener('change', (event) => {
+    const privacy = ensurePrivacyData();
+    privacy.hideShutdownRitual = event.target.checked;
+    renderDashboard();
+    scheduleDashboardSave();
+  });
+
+  document.getElementById('hiddenShutdownLabelInput').addEventListener('input', (event) => {
+    const privacy = ensurePrivacyData();
+    privacy.hiddenShutdownLabel = event.target.value;
+    document.getElementById('shutdownNote').textContent = getShutdownNoteText(appState.data, appState.data.labels || {}, privacy);
+    scheduleDashboardSave();
+  });
+
   document.getElementById('projectStartInput').addEventListener('change', async (event) => {
     const project = getSelectedProject();
     if (!project) return;
@@ -912,7 +1098,7 @@ function renderDashboard() {
   const root = document.documentElement;
   const body = document.body;
   const data = appState.data;
-  const privacy = data.privacy || {};
+  const privacy = ensurePrivacyData();
   const app = data.appearance || {};
   const now = new Date();
   const todayMidnight = new Date();
@@ -1037,27 +1223,38 @@ function renderDashboard() {
   setLabel('weekSubtitle', 'Timeline');
   setLabel('weekDaysLeft', '7 Days Left');
 
-  const sprintName = privacy.hideSprintName
-    ? (privacy.hiddenSprintLabel || 'Personal Focus')
-    : data.sprintName;
+  const sprintName = getDisplayedSprintName(data, privacy);
   document.getElementById('sprintName').textContent = sprintName;
   document.getElementById('mustWins').textContent = data.mustWinsRange;
 
-  const shutdownRitual = privacy.hideShutdownRitual
-    ? (privacy.hiddenShutdownLabel || 'Review and reset')
-    : data.shutdownRitual;
-  document.getElementById('shutdownNote').textContent =
-    `${labels.shutdownPrefix || 'SHUTDOWN RITUAL'}: ${shutdownRitual}`;
+  document.getElementById('shutdownNote').textContent = getShutdownNoteText(data, labels, privacy);
 
   const taskList = document.getElementById('taskList');
   const addTaskButton = document.getElementById('addTaskButton');
   const addWeekProjectButton = document.getElementById('addWeekProjectButton');
   const addTwoWeekProjectButton = document.getElementById('addTwoWeekProjectButton');
+  const privacyControls = document.getElementById('privacyControls');
+  const maskTodayTasksToggle = document.getElementById('maskTodayTasksToggle');
+  const privateTaskLabelInput = document.getElementById('privateTaskLabelInput');
+  const hideSprintNameToggle = document.getElementById('hideSprintNameToggle');
+  const hiddenSprintLabelInput = document.getElementById('hiddenSprintLabelInput');
+  const hideShutdownRitualToggle = document.getElementById('hideShutdownRitualToggle');
+  const hiddenShutdownLabelInput = document.getElementById('hiddenShutdownLabelInput');
   taskList.innerHTML = '';
   taskList.className = appState.isEditMode ? 'task-edit-list' : 'task-list';
   addTaskButton.hidden = !appState.isEditMode;
   addWeekProjectButton.hidden = !appState.isEditMode;
   addTwoWeekProjectButton.hidden = !appState.isEditMode;
+  privacyControls.hidden = !appState.isEditMode;
+  maskTodayTasksToggle.checked = !!privacy.maskTodayTasks;
+  privateTaskLabelInput.value = privacy.privateTaskLabel || '';
+  privateTaskLabelInput.disabled = !privacy.maskTodayTasks;
+  hideSprintNameToggle.checked = !!privacy.hideSprintName;
+  hiddenSprintLabelInput.value = privacy.hiddenSprintLabel || '';
+  hiddenSprintLabelInput.disabled = !privacy.hideSprintName;
+  hideShutdownRitualToggle.checked = !!privacy.hideShutdownRitual;
+  hiddenShutdownLabelInput.value = privacy.hiddenShutdownLabel || '';
+  hiddenShutdownLabelInput.disabled = !privacy.hideShutdownRitual;
 
   if (appState.isEditMode) {
     data.dailyTasks.forEach((task, index) => {

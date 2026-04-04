@@ -79,3 +79,15 @@ If you want to build another app using this as a template, remember these three 
 *   **Pillar 1: Capabilities**: In Tauri v2, permissions are strict. If you want to open a file (like the "Edit Tasks" button does), you *must* explicitly allow it in `src-tauri/capabilities/default.json`.
 *   **Pillar 2: The Setup Hook**: The `.setup(|app| { ... })` block in `lib.rs` is where you initialize everything that should happen *before* the user sees the window (like the pinning and the tray icon).
 *   **Pillar 3: Transparency**: To get a truly "borderless" feel, you must set `transparent: true` and `decorations: false` in `tauri.conf.json`. Without this, you'll have a white background and a title bar.
+
+---
+
+## 6. 2026-04-04 Update
+
+- Reviewed the existing privacy behavior and confirmed the dashboard already respected `privacy` values from `src/tasks.js`, but the interactive dashboard did not expose those settings as editable controls.
+- Checked the current GitHub issue list. There was no dedicated issue for dashboard text-masking privacy controls; the closest existing issues only covered broader interactive editing and hide-the-dashboard privacy ideas.
+- Added an edit-mode privacy card to the interactive dashboard so the wallpaper can mask task names and replace sprint or shutdown text with custom safe labels.
+- Hardened the dashboard and standalone editor merge paths so nested `privacy`, `labels`, and `appearance` settings survive saves instead of being dropped by shallow merges.
+- Verified the dashboard and editor JavaScript syntax locally.
+- Verified `npm run build` compiles the Tauri app and produces the `.app` bundle. DMG bundling still fails in this environment after the application itself is built.
+- Created and closed GitHub issue `#17`, `Add wallpaper privacy controls to the interactive dashboard`, to mark the completed work in the issue tracker.

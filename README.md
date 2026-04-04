@@ -12,6 +12,7 @@ This is a **modern standalone desktop app** built with [Tauri v2](https://v2.tau
 
 - **Desktop Overlay**: Sits behind your icons but above your wallpaper.
 - **Click-Through**: You can interact with your desktop icons right through the planner.
+- **Wallpaper Privacy Controls**: In dashboard edit mode, mask today's task names and replace visible sprint or shutdown text with safe labels.
 - **Live Sync**: Edits to `tasks.js` are detected instantly; the wallpaper updates the moment you save.
 - **Menu Bar Integration**: Access "Edit Tasks" and "Quit" directly from your macOS menu bar.
 - **No Dependencies**: No need for Plash, Chrome, or shell scripts.
@@ -59,6 +60,8 @@ The app watches `src/tasks.js`. To change your tasks:
 2. Select **Edit Tasks**.
 3. Update your tasks or Gantt bars in your text editor.
 4. Save the file — the desktop overlay will refresh instantly.
+
+For privacy controls that affect what remains visible on the desktop, enter dashboard edit mode and use the **Privacy on Wallpaper** controls directly in the center panel.
 
 ### Appearance Options
 

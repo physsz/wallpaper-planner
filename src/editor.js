@@ -2,21 +2,44 @@ const invoke = window.__TAURI__.core.invoke;
 
 let currentData = null;
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function mergeNestedSection(templateSection, savedSection) {
+  const templateValue = templateSection && typeof templateSection === 'object' ? clone(templateSection) : {};
+  const savedValue = savedSection && typeof savedSection === 'object' ? savedSection : {};
+  return {
+    ...templateValue,
+    ...savedValue
+  };
+}
+
+function mergeEditorData(template, saved) {
+  if (!saved || saved === null) return clone(template);
+
+  return {
+    ...clone(template),
+    ...saved,
+    appearance: mergeNestedSection(template.appearance, saved.appearance),
+    labels: mergeNestedSection(template.labels, saved.labels),
+    privacy: mergeNestedSection(template.privacy, saved.privacy),
+    dailyTasks: Array.isArray(saved.dailyTasks) ? saved.dailyTasks : [],
+    weekProjects: Array.isArray(saved.weekProjects) ? saved.weekProjects : [],
+    twoWeekProjects: Array.isArray(saved.twoWeekProjects) ? saved.twoWeekProjects : []
+  };
+}
+
 async function init() {
   try {
     const saved = await invoke("get_tasks");
     
     // Use window.tasksData (from tasks.js) as the master template
-    const template = JSON.parse(JSON.stringify(window.tasksData));
+    const template = clone(window.tasksData);
 
     if (saved && saved !== null) {
-      // Merge saved tasks into the template to preserve appearance/labels
-      currentData = {
-        ...template,
-        dailyTasks: saved.dailyTasks || [],
-        weekProjects: saved.weekProjects || [],
-        twoWeekProjects: saved.twoWeekProjects || []
-      };
+      // Merge saved content into the template so nested settings survive editor saves.
+      currentData = mergeEditorData(template, saved);
     } else {
       // First time: use template with cleared tasks
       currentData = template;
